@@ -109,11 +109,20 @@ body {
   position: relative; z-index: 1;
 }
 .company-pill {
-  background: rgba(255,255,255,0.13);
-  border: 1px solid rgba(255,255,255,0.22);
+  background: #ffffff;
+  color: #0d2149;
+  border: none;
   border-radius: 24px;
-  padding: 7px 20px;
-  font-size: 13px; font-weight: 500; letter-spacing: 0.2px;
+  padding: 8px 20px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.2px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  display: inline-block;
+}
+.company-pill:hover {
+  background: #e0eaff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
 }
 .cover-meta { text-align:right; font-size:12px; opacity:0.72; line-height:1.7; }
 .cover-meta .week-big { display:block; font-size:26px; font-weight:800; opacity:1; letter-spacing:-0.5px; line-height:1.2; }
@@ -259,6 +268,60 @@ body {
 .mem-plan  { font-size:10.5px; background:var(--blue-l); color:var(--blue-m); padding:2px 9px; border-radius:6px; font-weight:500; }
 .mem-issue { font-size:10.5px; background:var(--orange-l); color:var(--orange); border:1px solid #fed7aa; padding:2px 8px; border-radius:6px; font-weight:500; }
 
+/* ── 허브 퀵 네비 ────────────────────────────────────── */
+.hub-nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.hub-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+  cursor: pointer;
+}
+.hub-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+.hub-btn svg { width:16px; height:16px; flex-shrink:0; }
+
+.hub-btn-primary {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+}
+.hub-btn-primary:hover { background: #1a3f82; }
+
+.hub-btn-notion {
+  background: white;
+  color: #334155;
+  border-color: var(--border);
+}
+.hub-btn-notion:hover { background: #f8fafc; border-color: #94a3b8; }
+
+.hub-btn-green {
+  background: var(--green-l);
+  color: var(--green);
+  border-color: #bbf7d0;
+}
+.hub-btn-green:hover { background: #dcfce7; }
+
+.hub-btn-purple {
+  background: #fdf4ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+.hub-btn-purple:hover { background: #f3e8ff; }
+
 /* ── FOOTER ────────────────────────────────────────── */
 .footer {
   padding:16px 56px; font-size:11px; color:#94a3b8;
@@ -303,7 +366,7 @@ body {
   <div class="orb orb3"></div>
 
   <div class="cover-top">
-    <div class="company-pill">🧬 바디텍메드 주식회사</div>
+    <a class="company-pill" href="https://gimcimmim-cpu.github.io/" target="_blank" style="text-decoration:none;cursor:pointer;">🧬 Cancer팀 업무허브</a>
     <div class="cover-meta">
       <strong class="week-big" id="weekBig">–</strong>
       <span id="coverDate">–</span>
@@ -328,7 +391,76 @@ body {
 <!-- ═══ BODY ═══ -->
 <div class="body">
 
-  <div class="sec-label">스케줄 &amp; 할일 현황</div>
+  <!-- 🔗 빠른 이동 -->
+  <div class="sec-label" style="margin-top:26px;">빠른 이동</div>
+  <div class="hub-nav">
+
+    <!-- 업무 허브 (메인) -->
+    <a class="hub-btn hub-btn-primary"
+       href="https://www.notion.so/31456761fb4d8139a59ce0350930146a"
+       target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      🏠 나의 업무 허브
+    </a>
+
+    <!-- Cancer팀 업무 마스터 -->
+    <a class="hub-btn hub-btn-notion"
+       href="https://www.notion.so/2be56761fb4d802d8954dd651eeddc7d"
+       target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+      </svg>
+      🧬 Cancer팀 업무 마스터
+    </a>
+
+    <!-- 주간업무보고서 DB -->
+    <a class="hub-btn hub-btn-green"
+       href="https://www.notion.so/2bf56761fb4d80e39767c2ba0aab1aec"
+       target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+      📋 주간업무보고서
+    </a>
+
+    <!-- 허가 스케줄 -->
+    <a class="hub-btn hub-btn-purple"
+       href="https://www.notion.so/859e887c187a429cbfe14cd1e3366db9"
+       target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8"  y1="2" x2="8"  y2="6"/>
+        <line x1="3"  y1="10" x2="21" y2="10"/>
+      </svg>
+      📅 허가 스케줄
+    </a>
+
+  </div>
+
+  <!-- 동기화 상태 바 -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div class="sec-label" style="margin:0">스케줄 &amp; 할일 현황</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span id="syncStatus" style="font-size:11px;color:#94a3b8">데이터 로드 중…</span>
+      <button onclick="location.reload()" title="새로고침"
+        style="background:none;border:1px solid #e2e8f0;border-radius:8px;padding:4px 10px;font-size:11px;color:#64748b;cursor:pointer;display:flex;align-items:center;gap:4px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+        새로고침
+      </button>
+    </div>
+  </div>
 
   <div class="grid2">
     <!-- 📅 일정 -->
@@ -337,18 +469,15 @@ body {
         <div class="card-title">📅 이번 주 일정</div>
         <span class="badge" id="schBadge" style="background:#eff6ff;color:#1d4ed8">–</span>
       </div>
-      <div class="notion-panel">
-        <div class="np-icon">📅</div>
-        <div class="np-title">노션 일정 관리 DB</div>
-        <div class="np-desc">약속 · 이벤트 · 루틴 · 의료 · 여행 · 공부<br>노션에서 이번 주 일정을 등록·확인하세요</div>
-        <div id="schItems">
-          <div class="np-item"><span class="dot" style="background:#1d4ed8"></span>현재 등록된 일정이 없습니다</div>
+      <div id="schItems">
+        <div style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">
+          <div style="width:22px;height:22px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;"></div>
+          노션에서 일정 불러오는 중…
         </div>
-        <br>
-        <a class="np-link" href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-          노션에서 일정 관리
-        </a>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;text-align:right;">
+        <a href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank"
+           style="font-size:11px;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;padding:3px 10px;border-radius:6px;">Notion 일정 DB →</a>
       </div>
     </div>
 
@@ -384,22 +513,15 @@ body {
   <div class="report-card" id="report">
     <div class="report-head">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <span class="report-title">📋 19주차 팀 업무보고 요약</span>
-        <span class="report-badge">2026년 5월 4일 ~ 5월 8일</span>
+        <span class="report-title" id="reportTitle">📋 팀 업무보고 요약</span>
+        <span class="report-badge" id="reportPeriod">로드 중…</span>
       </div>
-      <a class="notion-btn" href="https://www.notion.so/35e56761fb4d81929fc5c15a9f95e7d6" target="_blank">
+      <a class="notion-btn" id="reportLink" href="https://www.notion.so/2bf56761fb4d80e39767c2ba0aab1aec" target="_blank">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
         Notion 원문 보기
       </a>
     </div>
-
-    <div class="issue-box">
-      <div class="issue-box-title">⚠️ 이번 주 주요 이슈 — 3건</div>
-      <div class="issue-row"><span class="issue-num">①</span><span><strong>AFIAS PSA 68F 혈구분리 이상</strong> (임지은) — AFIAS 조립 하우징 차수 변경이 원인. 수식작성·판매 문제 없음. DDB NaCl 농도(150→500mM) 및 Sample pad 교체 검토 필요.</span></div>
-      <div class="issue-row"><span class="issue-num">②</span><span><strong>Ferritin NC QC 부적합 발생</strong> (박영서) — SPCN024_260428, 14 roll 전반 Control 픽 파이는 현상. 인수인계 기간 생산 NC. 2주 aging 후 2차 QC 예정.</span></div>
-      <div class="issue-row"><span class="issue-num">③</span><span><strong>AFIAS CEA 1세대/3세대 측정값 차이</strong> (김수지) — bias 비교 시험 진행 중 (박주연 공동). 차주 데이터 정리 후 보고서 작성 예정.</span></div>
-    </div>
-
+    <div id="issueBox"></div>
     <div class="member-grid" id="memberGrid"></div>
   </div>
 
@@ -416,99 +538,136 @@ body {
 
 <!-- ═══ SCRIPT ═══ -->
 <script>
-/* ─── 날짜 ─── */
+/* ─── 날짜 기본값 ─── */
 const DOW = ['일','월','화','수','목','금','토'];
 const now = new Date();
 const dw  = now.getDay();
-const mon = new Date(now); mon.setDate(now.getDate() + (dw === 0 ? -6 : 1 - dw)); mon.setHours(0,0,0,0);
+const mon = new Date(now); mon.setDate(now.getDate() + (dw===0?-6:1-dw)); mon.setHours(0,0,0,0);
 const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
 const soy = new Date(now.getFullYear(), 0, 1);
 const wn  = Math.ceil(((now - soy) / 86400000 + soy.getDay() + 1) / 7);
 
-document.getElementById('weekBig').textContent  = `${wn}주차`;
-document.getElementById('coverDate').textContent = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${DOW[now.getDay()]})`;
-document.getElementById('footerDate').textContent = `업데이트: ${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-document.getElementById('schBadge').textContent  = `${mon.getMonth()+1}/${mon.getDate()}~${sun.getMonth()+1}/${sun.getDate()}`;
+document.getElementById('weekBig').textContent   = `${wn}주차`;
+document.getElementById('coverDate').textContent  = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${DOW[now.getDay()]})`;
+document.getElementById('schBadge').textContent   = `${mon.getMonth()+1}/${mon.getDate()}~${sun.getMonth()+1}/${sun.getDate()}`;
 
-/* ─── 할일 (localStorage, 주차별 저장) ─── */
-const STORE_KEY = `cm_todos_${now.getFullYear()}_w${wn}`;
-let todos = [];
-try { todos = JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch(e) {}
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function saveTodos() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(todos)); } catch(e) {}
-  const active = todos.filter(t => !t.done).length;
-  document.getElementById('statTodo').textContent  = active;
-  document.getElementById('todoBadge').textContent = `${todos.length}개`;
-}
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function renderTodos() {
-  const ul    = document.getElementById('todoList');
-  const empty = document.getElementById('todoEmpty');
-  if (!todos.length) { ul.innerHTML = ''; empty.style.display = 'block'; saveTodos(); return; }
-  empty.style.display = 'none';
-  const pc = {'🔴':'#ef4444','🟠':'#f97316','🟡':'#eab308','🟢':'#22c55e'};
-  ul.innerHTML = todos.map((t,i) => `
-    <li class="todo-li${t.done?' done':''}" onclick="toggleTodo(${i})">
-      <div class="todo-check${t.done?' checked':''}" onclick="toggleTodo(${i});event.stopPropagation()"></div>
-      <span style="width:8px;height:8px;border-radius:50%;background:${pc[t.prio]||'#eab308'};flex-shrink:0;display:inline-block"></span>
-      <span class="todo-text">${escHtml(t.text)}</span>
-      <button class="todo-del" onclick="delTodo(${i});event.stopPropagation()">×</button>
-    </li>`).join('');
-  saveTodos();
-}
-function addTodo() {
-  const inp  = document.getElementById('todoInput');
-  const prio = document.getElementById('prioSel').value;
-  const text = inp.value.trim();
-  if (!text) return;
-  todos.unshift({ text, prio, done: false });
-  renderTodos(); inp.value = ''; inp.focus();
-}
-function toggleTodo(i) { todos[i].done = !todos[i].done; renderTodos(); }
-function delTodo(i)    { todos.splice(i,1); renderTodos(); }
-document.getElementById('todoInput').addEventListener('keydown', e => { if (e.key==='Enter') addTodo(); });
-renderTodos();
-
-/* ─── 팀원 보고 ─── */
-[
-  { name:'박영서', color:'#2563eb', init:'박영',
-    done:'Ferritin Fujifilm SW 평가(CV<4% 달성) · Cyfra21-1 EuNP/Biotin 최적화 · NC QC 부적합 대응 · 항체 2종 입고',
-    plan:'CYWDA11EX 수식 · PEG 가혹 · DFRWEF09 수식 · NC 추가 테스트', issue:'NC QC 부적합' },
-  { name:'김수지', color:'#7c3aed', init:'김수',
-    done:'AFIAS CA15-3 구동 확인 · CEA AFIAS-3 bias 비교(박주연 공동) · IVDR TD 3건 · QC 기준강화 PPT',
-    plan:'CA15-3 개발완료보고서 · CEA bias 보고서 · H.pylori SA Granule DB 5.4L', issue:'CEA 1/3세대 값 차이' },
-  { name:'임지은', color:'#059669', init:'임지',
-    done:'PSA 68F 혈구분리 원인 분석(하우징 차수 차이) · 수식작성 진행 · 부적합 보고서 작성',
-    plan:'PSA Neo PSWDA45X/46X 수식 · GSA 라인 농도 조정 · PSA Cal 원료 검토', issue:null },
-  { name:'박주연', color:'#d97706', init:'박주',
-    done:'AFIAS-3 CEA 구동 확인 · AFIAS-1 SW 평가 11종 완료 · Ferritin Diluent 분주',
-    plan:'SW 추가 평가(H.pylori NP·iFOB) · CEA bias 정리 · QC 기준강화 회의', issue:'SW 수정 2건 필요' },
-  { name:'김나연', color:'#dc2626', init:'김나',
-    done:'ichroma-50+ Calprotectin 4차 평가(CV<10% 달성) · CPWDE03Z 수식완료 · CP_EB 25L',
-    plan:'01버전 Lv1 값 튐 재평가 · AFP PEG granule · CP_EB 100L · id chip 이관', issue:null },
-  { name:'장혜지', color:'#0891b2', init:'장혜',
-    done:'iFOB Neo FOWDE04Z 수식 · FO_EB 25L 제조 · CA19-9 수식 완료 예정 · QC 강화 자료',
-    plan:'iFOB Neo FOWDE05Z·FOWDF06Z 수식 · CA125 Diluent 10000T · QC 강화 회의(5/11)', issue:null },
-  { name:'유다연', color:'#6366f1', init:'유다',
-    done:'HS_EB 50L 2배치 제조(HSWEK12·HSWEL01 필터) · H.pylori SA CV 데이터 정리',
-    plan:'HS_DB 본 제조(6배치) · QC 기준강화 회의', issue:null },
-].forEach(m => {
-  const div = document.createElement('div');
-  div.className = 'member-row';
-  div.innerHTML = `
-    <div class="avatar" style="background:${m.color}">${m.init}</div>
-    <div class="mem-body">
-      <div class="mem-name">${m.name}</div>
-      <div class="mem-done">${m.done}</div>
-      <div class="mem-footer">
-        <span class="mem-plan">→ ${m.plan}</span>
-        ${m.issue ? `<span class="mem-issue">⚠️ ${m.issue}</span>` : ''}
+/* ─── 일정 렌더 ─── */
+const TYPE_STYLE = {
+  '📅 약속': {bg:'#eff6ff',c:'#1d4ed8'}, '📅 회의': {bg:'#eff6ff',c:'#1d4ed8'},
+  '🎉 이벤트':{bg:'#fdf4ff',c:'#7e22ce'}, '🔁 루틴':{bg:'#f0fdf4',c:'#15803d'},
+  '🏥 의료': {bg:'#fff1f2',c:'#be123c'}, '✈️ 여행':{bg:'#fff7ed',c:'#c2410c'},
+  '📚 공부': {bg:'#fefce8',c:'#a16207'},
+};
+function renderSchedule(items) {
+  const el = document.getElementById('schItems');
+  document.getElementById('statSch').textContent = items.length;
+  document.getElementById('schBadge').textContent = `${items.length}건`;
+  if (!items.length) {
+    el.innerHTML = `<div style="text-align:center;padding:28px 16px;">
+      <div style="font-size:28px;margin-bottom:8px">📭</div>
+      <div style="font-size:13px;color:#94a3b8;margin-bottom:14px">이번 주 등록된 일정이 없습니다</div>
+      <a class="np-link" href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        노션에서 일정 추가
+      </a></div>`;
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const d   = new Date(item.date + 'T00:00:00');
+    const ts  = TYPE_STYLE[item.type] || {bg:'#f1f5f9',c:'#64748b'};
+    const done= item.done ? 'opacity:0.45;text-decoration:line-through;' : '';
+    return `<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="min-width:46px;background:#eff6ff;border-radius:10px;padding:6px 4px;text-align:center;flex-shrink:0;">
+        <div style="font-size:20px;font-weight:800;color:#1d4ed8;line-height:1.1">${d.getDate()}</div>
+        <div style="font-size:10px;color:#64748b">${DOW[d.getDay()]}요</div>
+      </div>
+      <div style="flex:1;min-width:0;${done}">
+        <div style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(item.title)}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">${d.getMonth()+1}/${d.getDate()} (${DOW[d.getDay()]})${item.place ? ' · ' + escHtml(item.place) : ''}</div>
+        ${item.type ? `<span style="font-size:10px;padding:2px 7px;border-radius:5px;display:inline-block;margin-top:4px;font-weight:600;background:${ts.bg};color:${ts.c}">${escHtml(item.type)}</span>` : ''}
       </div>
     </div>`;
-  document.getElementById('memberGrid').appendChild(div);
-});
+  }).join('');
+}
+
+/* ─── 주간보고 렌더 ─── */
+function renderReport(rpt) {
+  if (!rpt) return;
+  document.getElementById('reportTitle').textContent = `📋 ${rpt.week ? rpt.week+'주차 ' : ''}팀 업무보고 요약`;
+  document.getElementById('reportPeriod').textContent = rpt.period || '';
+  if (rpt.url) document.getElementById('reportLink').href = rpt.url;
+
+  // 이슈
+  const ib = document.getElementById('issueBox');
+  if (rpt.issues && rpt.issues.length) {
+    ib.innerHTML = `<div class="issue-box">
+      <div class="issue-box-title">⚠️ 이번 주 주요 이슈 — ${rpt.issues.length}건</div>
+      ${rpt.issues.map(i=>`<div class="issue-row">
+        <span class="issue-num">${escHtml(i.num)}</span>
+        <span><strong>${escHtml(i.title)}</strong> (${escHtml(i.owner)}) — ${escHtml(i.desc)}</span>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  // 팀원
+  const mg = document.getElementById('memberGrid');
+  mg.innerHTML = '';
+  (rpt.members || []).forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'member-row';
+    div.innerHTML = `
+      <div class="avatar" style="background:${m.color}">${escHtml(m.init)}</div>
+      <div class="mem-body">
+        <div class="mem-name">${escHtml(m.name)}</div>
+        <div class="mem-done">${escHtml(m.done)}</div>
+        <div class="mem-footer">
+          <span class="mem-plan">→ ${escHtml(m.plan)}</span>
+          ${m.issue ? `<span class="mem-issue">⚠️ ${escHtml(m.issue)}</span>` : ''}
+        </div>
+      </div>`;
+    mg.appendChild(div);
+  });
+}
+
+/* ─── notion-data.json 로드 ─── */
+async function loadData() {
+  const status = document.getElementById('syncStatus');
+  const footer = document.getElementById('footerDate');
+  try {
+    const res  = await fetch(`./data/notion-data.json?_=${Date.now()}`);
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+
+    // 일정
+    renderSchedule(data.schedule || []);
+
+    // 주간보고
+    renderReport(data.weeklyReport);
+
+    // 마지막 업데이트 표시
+    if (data.lastUpdated) {
+      const d = new Date(data.lastUpdated);
+      const pad = n => String(n).padStart(2,'0');
+      const label = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} 기준`;
+      status.textContent = `✅ ${label}`;
+      status.style.color = '#16a34a';
+      footer.textContent = label;
+    }
+  } catch(e) {
+    // JSON 없을 때 fallback
+    status.textContent = '⚠️ 데이터 없음 (GitHub Actions 설정 필요)';
+    status.style.color = '#c2410c';
+    footer.textContent = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+    document.getElementById('schItems').innerHTML =
+      `<div style="text-align:center;padding:28px 16px;">
+        <div style="font-size:13px;color:#94a3b8;margin-bottom:14px">⚠️ 데이터를 불러오지 못했습니다</div>
+        <a class="np-link" href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank">노션에서 직접 보기</a>
+      </div>`;
+  }
+}
+loadData();
 
 /* ─── Service Worker 등록 ─── */
 if ('serviceWorker' in navigator) {
