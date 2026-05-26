@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-26T09:00:00+09:00",
+  "lastUpdated": "2026-05-26T18:00:00+09:00",
   "schedule": [
     {
       "id": "36056761-fb4d-8124-b844-f0a03f68fe65",
@@ -14,10 +14,10 @@
     {
       "id": "36056761-fb4d-8118-97e6-e43e0eb7f1a5",
       "title": "QC기준 강화회의",
-      "date": "2026-05-11T14:30:00.000+00:00",
+      "date": "2026-05-11T14:30:00.000+09:00",
       "type": "📅 회의",
       "place": "",
-      "memo": "오후 2시 30분까지 발표자료 제출 필요. 회의 후 주요 논의사항 작성 요청.",
+      "memo": "오후 2시 30분까지 발표자료 제출. 회의 후 주요 논의사항 작성 요청.",
       "done": true,
       "url": "https://www.notion.so/36056761fb4d811897e6e43e0eb7f1a5"
     },
@@ -32,37 +32,154 @@
       "url": "https://www.notion.so/35f56761fb4d80ca86bdfddc80db3544"
     },
     {
-      "id": "36056761-fb4d-81ee-91ae-e39c48f5201c",
-      "title": "5월 생산 투입 항체 리스트 회신 마감",
-      "date": "2026-05-14T15:00:00.000+00:00",
-      "type": "📅 회의",
-      "place": "",
-      "memo": "5월 생산 투입용 항체 구매량 산정. 견적서 함께 제출 필요. (🔴 긴급)",
-      "done": false,
-      "url": "https://www.notion.so/36056761fb4d81ee91aee39c48f5201c"
-    },
-    {
       "id": "36056761-fb4d-8118-937e-de415f128454",
       "title": "연구소 월간 발표",
       "date": "2026-05-18",
       "type": "📅 회의",
       "place": "",
-      "memo": "CV3% 줄이기 프로젝트 내용 제외, 신규 개발 및 공지사항만 발표. Cancer팀 개발 내용 있으면 발표 준비 필요.",
-      "done": false,
+      "memo": "CV3% 줄이기 프로젝트 제외, 신규 개발 및 공지사항만 발표. Cancer팀 발표 준비 필요.",
+      "done": true,
       "url": "https://www.notion.so/36056761fb4d8118937ede415f128454"
     },
     {
       "id": "36056761-fb4d-813a-b0fd-fb77ecc8c656",
       "title": "제품관리본부 & 생산본부 월간보고 (5월)",
-      "date": "2026-05-26T09:00:00.000+00:00",
+      "date": "2026-05-26T18:00:00.000+09:00",
       "type": "📅 회의",
       "place": "",
-      "memo": "2026년 5월 제품관리본부와 생산본부 월간보고 일정.",
+      "memo": "5월 제품관리본부 & 생산본부 월간보고. 오늘 오후 6시(KST).",
       "done": false,
       "url": "https://www.notion.so/36056761fb4d813ab0fdfb77ecc8c656"
     }
   ],
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "36c56761-fb4d-819c-aff8-d589819c7e8f",
+      "title": "AI 위원회 춘천 교육 회식 참석 여부 회신 (6/4)",
+      "status": "📥 inbox",
+      "priority": "🔴 긴급",
+      "due": "2026-05-26",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d819caff8d589819c7e8f"
+    },
+    {
+      "id": "36c56761-fb4d-81cb-82db-cb97eee6ecd9",
+      "title": "iFOB Neo 루마니아 QC Fail (FOWCF02Z) 대응 결론 확인",
+      "status": "🔄 진행중",
+      "priority": "🟠 높음",
+      "due": "",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d81cb82dbcb97eee6ecd9"
+    },
+    {
+      "id": "36c56761-fb4d-818a-b7df-ebc7c11a199f",
+      "title": "H.pylori SA HSWDK08 성능부적합 원인 파악 및 조치",
+      "status": "🔄 진행중",
+      "priority": "🟠 높음",
+      "due": "",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d818ab7dfebc7c11a199f"
+    },
+    {
+      "id": "36c56761-fb4d-810f-a431-db6b1236f0f6",
+      "title": "ichroma H.pylori SA Official Letter 검토 및 의견 제시",
+      "status": "📥 inbox",
+      "priority": "🟠 높음",
+      "due": "2026-05-28",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d810fa431db6b1236f0f6"
+    },
+    {
+      "id": "36c56761-fb4d-81ec-a26b-d0ce232934fd",
+      "title": "H.pylori Ab VIDAS 비교평가 데이터 검토 및 회신 (코소보)",
+      "status": "📥 inbox",
+      "priority": "🟠 높음",
+      "due": "2026-05-29",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d81eca26bd0ce232934fd"
+    },
+    {
+      "id": "36056761-fb4d-8109-851f-dbf387eb8d98",
+      "title": "PSA Standard Stock Solution 품질이상 공식 클레임 대응",
+      "status": "📥 inbox",
+      "priority": "🟠 높음",
+      "due": "",
+      "category": "업무",
+      "url": "https://www.notion.so/36056761fb4d8109851fdbf387eb8d98"
+    },
+    {
+      "id": "36c56761-fb4d-8156-b60b-c0a4e0897827",
+      "title": "6월/7월 라인분주 일정 최종 확인 및 승인",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "2026-05-29",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d8156b60bc0a4e0897827"
+    },
+    {
+      "id": "36c56761-fb4d-81d7-b961-c3fb74779689",
+      "title": "AFIAS Cyfra21-1 싱가포르 QC Fail 파악 (박영서 확인 지시)",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d81d7b961c3fb74779689"
+    },
+    {
+      "id": "36056761-fb4d-815b-8be7-ec209ca9c9a2",
+      "title": "AFIAS Calprotectin 대만 라벨 'colorectal cancer' 문구 삭제 대응",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "2026-05-20",
+      "category": "업무",
+      "url": "https://www.notion.so/36056761fb4d815b8be7ec209ca9c9a2"
+    },
+    {
+      "id": "36056761-fb4d-81db-b64f-c536a31ca6ab",
+      "title": "Ferritin 임상 프로토콜 전자서명 검토 및 회신",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "2026-05-16",
+      "category": "업무",
+      "url": "https://www.notion.so/36056761fb4d81dbb64fc536a31ca6ab"
+    },
+    {
+      "id": "36056761-fb4d-8173-85fd-f209737e9be1",
+      "title": "PSA Neo 모세혈 관련 documentation 검토 대응 (임지은)",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "",
+      "category": "업무",
+      "url": "https://www.notion.so/36056761fb4d817385fdf209737e9be1"
+    },
+    {
+      "id": "36056761-fb4d-816f-8f0f-ef39d03ecb75",
+      "title": "ichroma Calprotectin ID 칩 검수 (김나연)",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "2026-05-15",
+      "category": "업무",
+      "url": "https://www.notion.so/36056761fb4d816f8f0fef39d03ecb75"
+    },
+    {
+      "id": "36056761-fb4d-81b4-9350-e561e1e02280",
+      "title": "온도방 사용 승인 및 일정 조율 (박영서)",
+      "status": "📥 inbox",
+      "priority": "🟡 보통",
+      "due": "2026-05-14",
+      "category": "업무",
+      "url": "https://www.notion.so/36056761fb4d81b49350e561e1e02280"
+    },
+    {
+      "id": "36c56761-fb4d-8184-a442-dd4ecd430380",
+      "title": "AFIAS-1 SW iFOB Neo 정규버전 출시 일정 모니터링",
+      "status": "⏸️ 보류",
+      "priority": "🟡 보통",
+      "due": "2026-07-31",
+      "category": "업무",
+      "url": "https://www.notion.so/36c56761fb4d8184a442dd4ecd430380"
+    }
+  ],
   "weeklyReport": {
     "week": 20,
     "title": "🧪 Cancer팀 주간업무보고 – 20주차",
@@ -101,8 +218,8 @@
         "name": "김수지",
         "color": "#7c3aed",
         "init": "김수",
-        "done": "H.pylori SA Granule DB 제조(4.6L) · AFIAS CA15-3 구동조건 최적화(HWB/Mixture 200µL 선정, R²=0.9987) · SW 요청기안 상신 · CEA 1/3세대 Bias 결과 정리",
-        "plan": "ichroma CEA CEWED06 수식·ID chip · CA15-3 재현성·검체상관성 · CEA PEG 가혹 100일차 · AFIAS CEA Bias 개선시험(Deep red) · BOM 수정",
+        "done": "H.pylori SA Granule DB 제조(4.6L) · AFIAS CA15-3 구동조건 최적화(HWB/Mixture 200µL, R²=0.9987) · SW 요청기안 상신 · CEA 1/3세대 Bias 결과 정리",
+        "plan": "ichroma CEA CEWED06 수식·ID chip · CA15-3 재현성·검체상관성 · CEA PEG 가혹 100일차 · AFIAS CEA Bias 개선(Deep red) · BOM 수정",
         "issue": "CEA 1/3세대 Bias"
       },
       {
