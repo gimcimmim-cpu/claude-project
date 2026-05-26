@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHEOLMIN 개인 대시보드</title>
+<style>
+/* ── RESET & BASE ─────────────────────────────────── */
+:root {
+  --navy:    #0d2149;
+  --blue:    #1d4ed8;
+  --blue-m:  #2563eb;
+  --blue-l:  #eff6ff;
+  --green:   #15803d;
+  --green-l: #f0fdf4;
+  --orange:  #c2410c;
+  --orange-l:#fff7ed;
+  --gray:    #64748b;
+  --border:  #e8edf4;
+  --bg:      #f1f5f9;
+  --card:    #ffffff;
+  color-scheme: light;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', 'Malgun Gothic', -apple-system, sans-serif;
+  background: var(--bg);
+  color: #1e293b;
+  min-height: 100vh;
+}
+
+/* ── COVER ────────────────────────────────────────── */
+.cover {
+  background: linear-gradient(135deg, #0a1c3e 0%, #1a3f82 45%, #1d4ed8 100%);
+  padding: 38px 56px 46px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.orb { position:absolute; border-radius:50%; pointer-events:none; }
+.orb1 { top:-80px; right:-60px;  width:320px; height:320px; background:rgba(255,255,255,0.04); }
+.orb2 { bottom:-100px; left:36%; width:280px; height:280px; background:rgba(255,255,255,0.03); }
+.orb3 { top:10px; left:52%;      width:130px; height:130px; background:rgba(255,255,255,0.025); }
+
+.cover-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative; z-index: 1;
+}
+.company-pill {
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 24px;
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+.cover-meta {
+  text-align: right;
+  font-size: 12px;
+  opacity: 0.72;
+  line-height: 1.7;
+}
+.cover-meta .week-big {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  opacity: 1;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.cover-main { position:relative; z-index:1; margin-top:32px; }
+.cover-hello { font-size: 14px; opacity: 0.68; margin-bottom: 5px; }
+.cover-name  { font-size: 42px; font-weight: 800; letter-spacing:-1.8px; line-height:1.1; }
+.cover-role  { font-size: 15px; opacity: 0.78; margin-top: 7px; }
+.cover-line  { width:44px; height:3px; background:rgba(255,255,255,0.35); border-radius:2px; margin:20px 0; }
+
+.stats {
+  display: flex;
+  gap: 48px;
+  position: relative; z-index: 1;
+  flex-wrap: wrap;
+}
+.stat-val { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
+.stat-lbl { font-size: 11px; opacity: 0.58; margin-top: 2px; letter-spacing: 0.4px; }
+
+/* ── BODY ─────────────────────────────────────────── */
+.body { padding: 30px 56px 60px; }
+
+.sec-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin: 30px 0 14px;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 5px rgba(13,33,73,0.07);
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.card-title { font-size: 14px; font-weight: 700; color: var(--navy); }
+.badge {
+  font-size: 11px;
+  padding: 3px 11px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ── SCHEDULE PLACEHOLDER ─────────────────────────── */
+.notion-panel {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+}
+.notion-panel .np-icon { font-size: 32px; margin-bottom: 10px; }
+.notion-panel .np-title { font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+.notion-panel .np-desc  { font-size: 12px; color: #94a3b8; margin-bottom: 18px; line-height: 1.6; }
+.notion-panel .np-items { text-align: left; margin-bottom: 16px; }
+.np-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+.np-item .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.np-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--navy);
+  color: white;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 10px;
+  transition: background 0.15s, transform 0.1s;
+}
+.np-link:hover { background: #1a3f82; transform: translateY(-1px); }
+.np-link svg { width:14px; height:14px; }
+
+/* ── 이번 주 내 할일 입력 (editable) ────────────────── */
+.todo-input-wrap { margin-bottom: 12px; }
+.todo-add-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.todo-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  color: #1e293b;
+  background: #fafbfc;
+  transition: border 0.15s;
+}
+.todo-input:focus { border-color: var(--blue-m); background: white; }
+.todo-add-btn {
+  padding: 8px 14px;
+  background: var(--blue-m);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.todo-add-btn:hover { background: #1d4ed8; }
+
+.todo-list { list-style: none; }
+.todo-li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+  transition: background 0.1s;
+  cursor: pointer;
+}
+.todo-li:hover { background: #f8fafc; }
+.todo-li.done .todo-text { text-decoration: line-through; color: #94a3b8; }
+.todo-check {
+  width: 18px; height: 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 5px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.todo-check.checked { background: var(--green); border-color: var(--green); }
+.todo-check.checked::after { content:'✓'; color:white; font-size:11px; font-weight:700; }
+.todo-text { flex: 1; }
+.todo-del {
+  width: 20px; height: 20px;
+  border: none;
+  background: none;
+  color: #cbd5e1;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.1s, background 0.1s;
+  flex-shrink: 0;
+}
+.todo-del:hover { color: #ef4444; background: #fef2f2; }
+.prio-sel {
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+  background: white;
+  cursor: pointer;
+  font-family: inherit;
+}
+.todo-empty { text-align:center; padding:28px; color:#94a3b8; font-size:13px; }
+
+/* ── WEEKLY REPORT ────────────────────────────────── */
+.report-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px 28px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 5px rgba(13,33,73,0.07);
+}
+.report-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #f1f5f9;
+  margin-bottom: 0;
+}
+.report-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+.report-badge {
+  font-size: 12px;
+  background: var(--blue-l);
+  color: var(--blue-m);
+  padding: 4px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.notion-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--blue-m);
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.notion-btn:hover { background: var(--blue-l); }
+
+/* Issue Summary */
+.issue-box {
+  background: var(--orange-l);
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 18px 0;
+}
+.issue-box-title { font-size: 11px; font-weight: 700; color: var(--orange); letter-spacing:0.5px; margin-bottom:10px; }
+.issue-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 5px 0;
+  font-size: 12px;
+  color: #78350f;
+  line-height: 1.55;
+}
+.issue-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+  flex-shrink: 0;
+  width: 18px;
+}
+
+/* Member grid */
+.member-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid #f1f5f9;
+}
+.member-row {
+  display: flex;
+  gap: 14px;
+  padding: 14px 10px;
+  border-bottom: 1px solid #f8fafc;
+}
+.member-row:nth-child(odd)  { border-right: 1px solid #f1f5f9; }
+.member-row:last-child      { border-bottom: none; }
+.member-row:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+
+.avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+}
+.mem-body { flex: 1; min-width: 0; }
+.mem-name { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+.mem-done { font-size: 11.5px; color: #64748b; line-height: 1.6; }
+.mem-footer { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.mem-plan  { font-size: 10.5px; background: var(--blue-l); color: var(--blue-m); padding: 2px 9px; border-radius: 6px; font-weight: 500; }
+.mem-issue { font-size: 10.5px; background: var(--orange-l); color: var(--orange); border: 1px solid #fed7aa; padding: 2px 8px; border-radius: 6px; font-weight: 500; }
+
+/* ── FOOTER ───────────────────────────────────────── */
+.footer {
+  padding: 16px 56px;
+  font-size: 11px;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────── */
+@media (max-width: 840px) {
+  .cover, .body, .footer { padding-left: 20px; padding-right: 20px; }
+  .grid2, .member-grid { grid-template-columns: 1fr; }
+  .stats { gap: 24px; }
+  .cover-name { font-size: 30px; }
+  .member-row:nth-child(odd) { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ COVER ═══════════════════════ -->
+<div class="cover">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <div class="cover-top">
+    <div class="company-pill">🧬 바디텍메드 주식회사</div>
+    <div class="cover-meta">
+      <strong class="week-big" id="weekBig">–</strong>
+      <span id="coverDate">–</span>
+    </div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-hello">안녕하세요,</div>
+    <div class="cover-name">CHEOLMIN 님의 대시보드</div>
+    <div class="cover-role">Cancer팀 팀장 &middot; 체외진단 카트리지 개발 연구원 (2010 ~ 현재)</div>
+    <div class="cover-line"></div>
+  </div>
+
+  <div class="stats">
+    <div>
+      <div class="stat-val" id="statSch">–</div>
+      <div class="stat-lbl">이번 주 일정</div>
+    </div>
+    <div>
+      <div class="stat-val" id="statTodo">0</div>
+      <div class="stat-lbl">금주 할일</div>
+    </div>
+    <div>
+      <div class="stat-val">19주</div>
+      <div class="stat-lbl">2026년 현재</div>
+    </div>
+    <div>
+      <div class="stat-val">7명</div>
+      <div class="stat-lbl">Cancer팀 팀원</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BODY ═══════════════════════ -->
+<div class="body">
+
+  <div class="sec-label">스케줄 &amp; 할일 현황</div>
+
+  <div class="grid2">
+
+    <!-- 📅 이번 주 일정 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📅 이번 주 일정</div>
+        <span class="badge" id="schBadge" style="background:#eff6ff;color:#1d4ed8">–</span>
+      </div>
+      <div class="notion-panel">
+        <div class="np-icon">📅</div>
+        <div class="np-title">노션 일정 관리 DB</div>
+        <div class="np-desc">
+          약속 · 이벤트 · 루틴 · 의료 · 여행 · 공부<br>
+          노션에서 이번 주 일정을 등록·확인하세요
+        </div>
+        <div class="np-items" id="scheduleItems">
+          <!-- 동적으로 채워지거나 빈 안내 표시 -->
+          <div class="np-item"><span class="dot" style="background:#1d4ed8"></span>현재 등록된 일정이 없습니다</div>
+        </div>
+        <a class="np-link" href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+          노션에서 일정 관리
+        </a>
+      </div>
+    </div>
+
+    <!-- ✅ 금주 할일 모니터링 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">✅ 금주 할일 모니터링</div>
+        <span class="badge" id="todoBadge" style="background:#f0fdf4;color:#15803d">0개</span>
+      </div>
+
+      <div class="todo-input-wrap">
+        <div class="todo-add-row">
+          <input class="todo-input" id="todoInput" type="text" placeholder="새 할일 입력 후 Enter..." />
+          <select class="prio-sel" id="prioSel">
+            <option value="🔴">🔴 긴급</option>
+            <option value="🟠">🟠 높음</option>
+            <option value="🟡" selected>🟡 보통</option>
+            <option value="🟢">🟢 낮음</option>
+          </select>
+          <button class="todo-add-btn" onclick="addTodo()">추가</button>
+        </div>
+        <ul class="todo-list" id="todoList"></ul>
+        <div class="todo-empty" id="todoEmpty">이번 주 할일을 입력해 보세요 📝</div>
+      </div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px;color:#94a3b8">노션 DB에서도 관리 가능</span>
+        <a href="https://www.notion.so/8a3af724ea954f799563a9b6c74ccf67" target="_blank" style="font-size:11px;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;padding:3px 10px;border-radius:6px;">Notion 할일 DB →</a>
+      </div>
+    </div>
+
+  </div><!-- /grid2 -->
+
+  <!-- 📋 주간업무보고 -->
+  <div class="sec-label">Cancer팀 주간업무보고</div>
+
+  <div class="report-card">
+    <div class="report-head">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span class="report-title">📋 19주차 팀 업무보고 요약</span>
+        <span class="report-badge">2026년 5월 4일 ~ 5월 8일</span>
+      </div>
+      <a class="notion-btn" href="https://www.notion.so/35e56761fb4d81929fc5c15a9f95e7d6" target="_blank">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+        Notion 원문 보기
+      </a>
+    </div>
+
+    <!-- 이슈 요약 -->
+    <div class="issue-box">
+      <div class="issue-box-title">⚠️ 이번 주 주요 이슈 — 3건</div>
+      <div class="issue-row">
+        <span class="issue-num">①</span>
+        <span><strong>AFIAS PSA 68F 혈구분리 이상</strong> (임지은) — AFIAS 조립 하우징 차수 변경이 원인. 수식작성·판매 문제 없음. DDB NaCl 농도 변경(150mM→500mM) 및 Sample pad 교체 검토 필요.</span>
+      </div>
+      <div class="issue-row">
+        <span class="issue-num">②</span>
+        <span><strong>Ferritin NC QC 부적합 발생</strong> (박영서) — SPCN024_260428, 14 roll 전반 Control 픽 상단 파이는 현상. 인수인계 기간 생산 NC. 2주 aging 후 2차 QC 예정.</span>
+      </div>
+      <div class="issue-row">
+        <span class="issue-num">③</span>
+        <span><strong>AFIAS CEA 1세대/3세대 측정값 차이</strong> (김수지) — bias 비교 시험 진행 중 (박주연 공동). 차주 데이터 정리 후 보고서 작성 예정.</span>
+      </div>
+    </div>
+
+    <!-- 팀원별 현황 -->
+    <div class="member-grid" id="memberGrid"></div>
+  </div>
+
+</div><!-- /body -->
+
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+<div class="footer">
+  <span>바디텍메드 · Cancer팀 팀장 김철민</span>
+  <span id="footerDate">–</span>
+</div>
+
+<!-- ═══════════════════════ SCRIPT ═══════════════════════ -->
+<script>
+/* ─── 날짜 초기화 ─────────────────────────────────── */
+const DOW = ['일','월','화','수','목','금','토'];
+const now = new Date();
+const dayW = now.getDay();
+const diffMon = dayW === 0 ? -6 : 1 - dayW;
+const mon = new Date(now); mon.setDate(now.getDate() + diffMon); mon.setHours(0,0,0,0);
+const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+const soy = new Date(now.getFullYear(), 0, 1);
+const wn  = Math.ceil(((now - soy) / 86400000 + soy.getDay() + 1) / 7);
+
+document.getElementById('weekBig').textContent  = `${wn}주차`;
+document.getElementById('coverDate').textContent =
+  `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${DOW[now.getDay()]})`;
+document.getElementById('footerDate').textContent =
+  `마지막 업데이트: ${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+document.getElementById('schBadge').textContent =
+  `${mon.getMonth()+1}/${mon.getDate()}~${sun.getMonth()+1}/${sun.getDate()}`;
+
+/* ─── TODO 관리 (로컬 스토리지) ────────────────────── */
+let todos = JSON.parse(localStorage.getItem('cm_todos_' + getWeekKey()) || '[]');
+
+function getWeekKey() {
+  return `${now.getFullYear()}_w${wn}`;
+}
+function saveTodos() {
+  localStorage.setItem('cm_todos_' + getWeekKey(), JSON.stringify(todos));
+  updateStatTodo();
+}
+function updateStatTodo() {
+  const active = todos.filter(t => !t.done).length;
+  document.getElementById('statTodo').textContent = active;
+  document.getElementById('todoBadge').textContent = `${todos.length}개`;
+}
+
+function renderTodos() {
+  const ul = document.getElementById('todoList');
+  const empty = document.getElementById('todoEmpty');
+  if (!todos.length) {
+    ul.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  const prioColor = { '🔴':'#ef4444','🟠':'#f97316','🟡':'#eab308','🟢':'#22c55e' };
+  ul.innerHTML = todos.map((t,i) => `
+    <li class="todo-li ${t.done?'done':''}" onclick="toggleTodo(${i})">
+      <div class="todo-check ${t.done?'checked':''}" onclick="toggleTodo(${i});event.stopPropagation()"></div>
+      <span class="dot" style="background:${prioColor[t.prio]||'#eab308'};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
+      <span class="todo-text">${escHtml(t.text)}</span>
+      <button class="todo-del" onclick="delTodo(${i});event.stopPropagation()">×</button>
+    </li>`).join('');
+  updateStatTodo();
+}
+
+function addTodo() {
+  const inp = document.getElementById('todoInput');
+  const sel = document.getElementById('prioSel');
+  const text = inp.value.trim();
+  if (!text) return;
+  todos.unshift({ text, prio: sel.value, done: false, createdAt: Date.now() });
+  saveTodos();
+  renderTodos();
+  inp.value = '';
+  inp.focus();
+}
+function toggleTodo(i) {
+  todos[i].done = !todos[i].done;
+  saveTodos();
+  renderTodos();
+}
+function delTodo(i) {
+  todos.splice(i, 1);
+  saveTodos();
+  renderTodos();
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+document.getElementById('todoInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTodo();
+});
+renderTodos();
+
+/* ─── 팀원 보고 렌더 ────────────────────────────────── */
+const members = [
+  {
+    name: '박영서', color: '#2563eb', init: '박영',
+    done: 'Ferritin Fujifilm SW 평가(CV<4% 달성) · Cyfra21-1 EuNP/Biotin 비율 최적화 · SPCN024_260428 NC QC 부적합 대응 · 항체 2종 입고',
+    plan: 'CYWDA11EX 수식작성 · PEG 가혹 안정화 · DFRWEF09 수식 · NC 부적합 추가 테스트',
+    issue: 'NC QC 부적합'
+  },
+  {
+    name: '김수지', color: '#7c3aed', init: '김수',
+    done: 'AFIAS CA15-3 구동 확인 · CEA AFIAS-3 bias 비교(박주연 공동) · IVDR TD 3건 · QC 기준강화 PPT',
+    plan: 'CA15-3 개발완료보고서 · CEA bias 보고서 · H.pylori SA Granule DB 5.4L',
+    issue: 'CEA 1/3세대 값 차이'
+  },
+  {
+    name: '임지은', color: '#059669', init: '임지',
+    done: 'PSA 68F 혈구분리 원인 분석 완료(하우징 차수 차이) · 수식작성 진행 · 부적합 보고서 작성',
+    plan: 'PSA Neo PSWDA45X/46X 수식 · GSA 라인 농도 조정 · PSA Cal 원료 검토(Biosynth)',
+    issue: null
+  },
+  {
+    name: '박주연', color: '#d97706', init: '박주',
+    done: 'AFIAS-3 CEA 구동 확인 · AFIAS-1 SW 평가 11종 완료 · Ferritin Diluent 분주',
+    plan: 'SW 추가 평가(H.pylori NP COI값·iFOB HWO→HWB) · CEA bias 정리 · QC 기준강화 회의',
+    issue: 'SW 수정 2건 필요'
+  },
+  {
+    name: '김나연', color: '#dc2626', init: '김나',
+    done: 'ichroma-50+ Calprotectin 4차 평가 완료(CV<10% 달성) · CPWDE03Z 수식완료 · CP_EB 25L 제조',
+    plan: '01버전 Lv1 값 튐 원인 재평가 · AFP PEG granule 평가 · CP_EB 100L · id chip 이관',
+    issue: null
+  },
+  {
+    name: '장혜지', color: '#0891b2', init: '장혜',
+    done: 'iFOB Neo FOWDE04Z 수식 · FO_EB_260508 25L 제조 · CA19-9 CXWDB07EX 수식 완료 예정 · QC 강화 자료',
+    plan: 'iFOB Neo FOWDE05Z·FOWDF06Z 수식 · CA125 Diluent 10000T · QC 강화 회의(5/11)',
+    issue: null
+  },
+  {
+    name: '유다연', color: '#6366f1', init: '유다',
+    done: 'HS_EB 50L 2배치 제조(HSWEK12·HSWEL01 필터) · H.pylori SA CV 데이터 정리',
+    plan: 'HS_DB 제조(1배치 시험 후 6배치 본 제조) · QC 기준강화 회의',
+    issue: null
+  },
+];
+
+document.getElementById('memberGrid').innerHTML = members.map(m => `
+  <div class="member-row">
+    <div class="avatar" style="background:${m.color}">${m.init}</div>
+    <div class="mem-body">
+      <div class="mem-name">${m.name}</div>
+      <div class="mem-done">${m.done}</div>
+      <div class="mem-footer">
+        <span class="mem-plan">→ ${m.plan}</span>
+        ${m.issue ? `<span class="mem-issue">⚠️ ${m.issue}</span>` : ''}
+      </div>
+    </div>
+  </div>`).join('');
+
+/* ─── 일정 슬롯 카운트 (추후 확장용) ─────────────── */
+document.getElementById('statSch').textContent = '0';
+</script>
+</body>
+</html>
