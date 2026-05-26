@@ -62,18 +62,17 @@ function propText(page, key) {
   return '';
 }
 
-// ── 이번 주 월~일 범위 ─────────────────────────────
+// ── 오늘 기준 ±2주 범위 (팀장 일정 파악용) ─────────
 function getWeekRange() {
   const now = new Date();
-  const dow = now.getDay();
-  const mon = new Date(now);
-  mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
-  mon.setHours(0,0,0,0);
-  const sun = new Date(mon);
-  sun.setDate(mon.getDate() + 13); // 2주치까지 가져오기
+  const past = new Date(now);
+  past.setDate(now.getDate() - 7);   // 1주 전 (완료된 회의도 확인)
+  past.setHours(0,0,0,0);
+  const future = new Date(now);
+  future.setDate(now.getDate() + 21); // 3주 앞까지 (중요 일정 미리 파악)
   return {
-    start: mon.toISOString().slice(0,10),
-    end:   sun.toISOString().slice(0,10),
+    start: past.toISOString().slice(0,10),
+    end:   future.toISOString().slice(0,10),
   };
 }
 
@@ -96,11 +95,11 @@ async function fetchSchedule() {
   return data.results.map(p => ({
     id:    p.id,
     title: richText(p.properties?.['일정명']?.title || []) || '(제목 없음)',
-    date:  propText(p, '날짜/시간'),
+    date:  p.properties?.['날짜/시간']?.date?.start || '',
     type:  propText(p, '유형'),
     place: propText(p, '장소'),
     memo:  propText(p, '준비물/메모'),
-    done:  propText(p, '완료여부') === true || propText(p, '완료여부') === 'true',
+    done:  p.properties?.['완료여부']?.checkbox === true,
     url:   p.url,
   }));
 }
@@ -208,6 +207,12 @@ async function main() {
     console.log(`✅ data/notion-data.json 갱신 완료`);
     console.log(`   일정 ${schedule.length}건 / 할일 ${tasks.length}건`);
     if (weeklyReport) console.log(`   주간보고: ${weeklyReport.title}`);
+    // 팀장 확인용: 미완료 일정 목록 출력
+    const pending = schedule.filter(s => !s.done);
+    if (pending.length) {
+      console.log(`\n📋 미완료 일정 (팀장 확인 필요):`);
+      pending.forEach(s => console.log(`   - [${s.date?.slice(0,10)}] ${s.title} ${s.memo ? '(' + s.memo.slice(0,30) + ')' : ''}`));
+    }
 
   } catch(err) {
     console.error('❌ 오류 발생:', err.message);

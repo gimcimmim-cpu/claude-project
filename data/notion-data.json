@@ -1,6 +1,26 @@
 {
-  "lastUpdated": "2026-05-13T10:36:00+09:00",
+  "lastUpdated": "2026-05-26T09:00:00+09:00",
   "schedule": [
+    {
+      "id": "36056761-fb4d-8124-b844-f0a03f68fe65",
+      "title": "주간팀장회의",
+      "date": "2026-05-11",
+      "type": "📅 회의",
+      "place": "",
+      "memo": "QC기준 강화회의 후 진행 예정. 연구기획팀 안내.",
+      "done": true,
+      "url": "https://www.notion.so/36056761fb4d8124b844f0a03f68fe65"
+    },
+    {
+      "id": "36056761-fb4d-8118-97e6-e43e0eb7f1a5",
+      "title": "QC기준 강화회의",
+      "date": "2026-05-11T14:30:00.000+00:00",
+      "type": "📅 회의",
+      "place": "",
+      "memo": "오후 2시 30분까지 발표자료 제출 필요. 회의 후 주요 논의사항 작성 요청.",
+      "done": true,
+      "url": "https://www.notion.so/36056761fb4d811897e6e43e0eb7f1a5"
+    },
     {
       "id": "35f56761-fb4d-80ca-86bd-fddc80db3544",
       "title": "주간 팀회의",
@@ -8,44 +28,123 @@
       "type": "📅 회의",
       "place": "404호 회의실",
       "memo": "",
-      "done": false,
+      "done": true,
       "url": "https://www.notion.so/35f56761fb4d80ca86bdfddc80db3544"
+    },
+    {
+      "id": "36056761-fb4d-81ee-91ae-e39c48f5201c",
+      "title": "5월 생산 투입 항체 리스트 회신 마감",
+      "date": "2026-05-14T15:00:00.000+00:00",
+      "type": "📅 회의",
+      "place": "",
+      "memo": "5월 생산 투입용 항체 구매량 산정. 견적서 함께 제출 필요. (🔴 긴급)",
+      "done": false,
+      "url": "https://www.notion.so/36056761fb4d81ee91aee39c48f5201c"
+    },
+    {
+      "id": "36056761-fb4d-8118-937e-de415f128454",
+      "title": "연구소 월간 발표",
+      "date": "2026-05-18",
+      "type": "📅 회의",
+      "place": "",
+      "memo": "CV3% 줄이기 프로젝트 내용 제외, 신규 개발 및 공지사항만 발표. Cancer팀 개발 내용 있으면 발표 준비 필요.",
+      "done": false,
+      "url": "https://www.notion.so/36056761fb4d8118937ede415f128454"
+    },
+    {
+      "id": "36056761-fb4d-813a-b0fd-fb77ecc8c656",
+      "title": "제품관리본부 & 생산본부 월간보고 (5월)",
+      "date": "2026-05-26T09:00:00.000+00:00",
+      "type": "📅 회의",
+      "place": "",
+      "memo": "2026년 5월 제품관리본부와 생산본부 월간보고 일정.",
+      "done": false,
+      "url": "https://www.notion.so/36056761fb4d813ab0fdfb77ecc8c656"
     }
   ],
   "tasks": [],
   "weeklyReport": {
-    "week": 19,
-    "title": "Cancer팀 주간업무보고 – 19주차",
-    "period": "2026년 5월 4일 ~ 5월 8일",
-    "url": "https://www.notion.so/35e56761fb4d81929fc5c15a9f95e7d6",
+    "week": 20,
+    "title": "🧪 Cancer팀 주간업무보고 – 20주차",
+    "period": "2026년 5월 11일 ~ 2026년 5월 15일",
+    "url": "https://www.notion.so/36456761fb4d818e82c5c20191bbe990",
     "issues": [
       {
         "num": "①",
-        "title": "AFIAS PSA 68F 혈구분리 이상",
-        "owner": "임지은",
-        "desc": "AFIAS 조립 하우징 차수 변경이 원인. 수식작성·판매 문제 없음. DDB NaCl 농도(150→500mM) 및 Sample pad 교체 검토 필요."
+        "title": "AFIAS Ferritin A3 장비 구동오류",
+        "owner": "박영서",
+        "desc": "88X 배치부터 AFIAS-3에서 지속 값 튐. A3 3대(1세대 1대·뉴플랫폼 2대) 모두 30T당 1~2회 구동오류 확인. NC 자체 문제 아닌 것으로 판단 → AFIAS팀 공유 완료."
       },
       {
         "num": "②",
-        "title": "Ferritin NC QC 부적합 발생",
-        "owner": "박영서",
-        "desc": "SPCN024_260428, 14 roll 전반 Control 픽 파이는 현상. 인수인계 기간 생산 NC. 2주 aging 후 2차 QC 예정."
+        "title": "AFIAS CEA 1세대/3세대 Bias",
+        "owner": "김수지",
+        "desc": "뉴플랫폼 Recovery: Lv1 71.9%, Lv2 61.9% → QC 기준 Bias ±14% 초과. 원인: QC 과정 구형/신형 혼용. Conjugator FPR648→Deep red 변경 개선 시험 차주 예정."
       },
       {
         "num": "③",
-        "title": "AFIAS CEA 1세대/3세대 측정값 차이",
-        "owner": "김수지",
-        "desc": "bias 비교 시험 진행 중 (박주연 공동). 차주 데이터 정리 후 보고서 작성 예정."
+        "title": "AFIAS-10 Calprotectin 내수허가 심사 진행",
+        "owner": "김나연",
+        "desc": "보완 완료 후 심사관 심사 진행 중. A-10 전용 상관성 자료·QC 성적서 전달 완료(CV<10% 기준 만족). 추가 보완 없을 경우 5월 말 승인 예정."
       }
     ],
     "members": [
-      { "name": "박영서", "color": "#2563eb", "init": "박영", "done": "Ferritin Fujifilm SW 평가(CV<4% 달성) · Cyfra21-1 EuNP/Biotin 최적화 · NC QC 부적합 대응 · 항체 2종 입고", "plan": "CYWDA11EX 수식 · PEG 가혹 · DFRWEF09 수식 · NC 추가 테스트", "issue": "NC QC 부적합" },
-      { "name": "김수지", "color": "#7c3aed", "init": "김수", "done": "AFIAS CA15-3 구동 확인 · CEA AFIAS-3 bias 비교 · IVDR TD 3건 · QC 기준강화 PPT", "plan": "CA15-3 개발완료보고서 · CEA bias 보고서 · H.pylori SA Granule DB 5.4L", "issue": "CEA 1/3세대 값 차이" },
-      { "name": "임지은", "color": "#059669", "init": "임지", "done": "PSA 68F 혈구분리 원인 분석 완료 · 수식작성 진행 · 부적합 보고서 작성", "plan": "PSA Neo PSWDA45X/46X 수식 · GSA 라인 농도 조정 · PSA Cal 원료 검토", "issue": null },
-      { "name": "박주연", "color": "#d97706", "init": "박주", "done": "AFIAS-3 CEA 구동 확인 · AFIAS-1 SW 평가 11종 완료 · Ferritin Diluent 분주", "plan": "SW 추가 평가(H.pylori NP·iFOB) · CEA bias 정리 · QC 기준강화 회의", "issue": "SW 수정 2건 필요" },
-      { "name": "김나연", "color": "#dc2626", "init": "김나", "done": "ichroma-50+ Calprotectin 4차 평가(CV<10%) · CPWDE03Z 수식완료 · CP_EB 25L", "plan": "01버전 Lv1 값 튐 재평가 · AFP PEG granule · CP_EB 100L · id chip 이관", "issue": null },
-      { "name": "장혜지", "color": "#0891b2", "init": "장혜", "done": "iFOB Neo FOWDE04Z 수식 · FO_EB 25L 제조 · CA19-9 수식 완료 예정 · QC 강화 자료", "plan": "iFOB Neo FOWDE05Z·FOWDF06Z 수식 · CA125 Diluent 10000T · QC 강화 회의(5/11)", "issue": null },
-      { "name": "유다연", "color": "#6366f1", "init": "유다", "done": "HS_EB 50L 2배치 제조(HSWEK12·HSWEL01 필터) · H.pylori SA CV 데이터 정리", "plan": "HS_DB 본 제조(6배치) · QC 기준강화 회의", "issue": null }
+      {
+        "name": "박영서",
+        "color": "#2563eb",
+        "init": "박영",
+        "done": "Cyfra21-1 Biotin DB 액상 안정성 확인(72H) · CYWDA11EX 수식 Test · Ferritin Fujifilm SW 평가(35℃) · AFIAS Ferritin QC A3 구동오류 확인·공유",
+        "plan": "ichroma Cyfra21-1 Conjugation 2건(EuNP·Biotin) · DB·그래뉼 생산 · Ferritin 수식작성 2건 · PEG 안정성 실험 · 월간회의",
+        "issue": "AFIAS Ferritin A3 구동오류"
+      },
+      {
+        "name": "김수지",
+        "color": "#7c3aed",
+        "init": "김수",
+        "done": "H.pylori SA Granule DB 제조(4.6L) · AFIAS CA15-3 구동조건 최적화(HWB/Mixture 200µL 선정, R²=0.9987) · SW 요청기안 상신 · CEA 1/3세대 Bias 결과 정리",
+        "plan": "ichroma CEA CEWED06 수식·ID chip · CA15-3 재현성·검체상관성 · CEA PEG 가혹 100일차 · AFIAS CEA Bias 개선시험(Deep red) · BOM 수정",
+        "issue": "CEA 1/3세대 Bias"
+      },
+      {
+        "name": "임지은",
+        "color": "#059669",
+        "init": "임지",
+        "done": "AFIAS PSA Neo(45X·46X)·ichroma PSA(07·08) 수식·QC · PSA Cal 이원화(Biosynth) · PSA-C dialysis 400mg · 라인분주",
+        "plan": "수식작성 3배치 · DB 제조 3배치 · PSA Cal 이원화 안정성 · PSA-C 언컷 일원화 안정성 · TN_G 라인농도 조정",
+        "issue": null
+      },
+      {
+        "name": "박주연",
+        "color": "#d97706",
+        "init": "박주",
+        "done": "AFIAS-1 SW 평가 추가완료(iFOB HWB ✅, H.pylori SA COI값 ✅) · Ferritin QC 이상건 확인 · CP_EB 100L 필터 · Diluent 분주",
+        "plan": "AFIAS PSA Neo 출하전 검사(A1/A3/A6/A10) · 주간 보고",
+        "issue": null
+      },
+      {
+        "name": "김나연",
+        "color": "#dc2626",
+        "init": "김나",
+        "done": "Calprotectin 01버전 재현성 재평가(n=50) · AFIAS CP 내수허가 보완 완료 → 심사 진행 중 · AFP PEG 가혹 granule · HE4 수식·검체상관성(R²≥0.98)",
+        "plan": "Calprotectin 재현성 마무리 · AFP granule 가혹 안정성 · HE4 수식·상관성 · AF_DB 11.5L · Calprotectin Control 30mL · 월간회의",
+        "issue": "AFIAS-10 Calprotectin 내수허가 심사 진행"
+      },
+      {
+        "name": "장혜지",
+        "color": "#0891b2",
+        "init": "장혜",
+        "done": "iFOB Neo FOWDE05Z 수식 · CA125 Diluent 5.5L · iFOB Neo FOWDA01Y 수식(양산품 5000T) · AFIAS iFOB Neo 보완서류 완료(28일차·A10 상관성·QC)",
+        "plan": "iFOB Neo FOWDF06Z 수식 · FO_EB 25L · CA19-9 Diluent 3L · GSA conjugator · NC 라인분주 · 월간보고 회의",
+        "issue": null
+      },
+      {
+        "name": "유다연",
+        "color": "#6366f1",
+        "init": "유다",
+        "done": "Anti-HP_2-D-Biotin conjugator(16mg) 제조 · H.pylori SA Granule DB 제조 · HS_EB 25L 2배치 필터 · HSWEK10·HSWEK11 수식",
+        "plan": "HSWEK10·HSWEK11 ID Chip 이관 · H.pylori 수식용 Cal 소량 제조 · Anti-HP_1-D-Biotin conjugator · HP Granule 성능 테스트",
+        "issue": null
+      }
     ]
   }
 }
