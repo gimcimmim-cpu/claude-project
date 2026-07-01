@@ -3,741 +3,699 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHEOLMIN 개인 대시보드</title>
-
-<!-- ── PWA 메타 태그 ── -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1d4ed8">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CM 대시보드">
-<link rel="apple-touch-icon" href="icons/icon-152x152.png">
-<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
-
-<!-- OG / 공유 메타 -->
-<meta property="og:title" content="CHEOLMIN 개인 대시보드">
-<meta property="og:description" content="바디텍메드 Cancer팀 팀장 – 스케줄·할일·주간보고">
-<meta property="og:type" content="website">
-
+<title>인턴 스케쥴 (2026.07.01 - 2026.12.31)</title>
 <style>
-/* ── RESET & VARIABLES ─────────────────────────────── */
-:root {
-  --navy:     #0d2149;
-  --blue:     #1d4ed8;
-  --blue-m:   #2563eb;
-  --blue-l:   #eff6ff;
-  --green:    #15803d;
-  --green-l:  #f0fdf4;
-  --orange:   #c2410c;
-  --orange-l: #fff7ed;
-  --gray:     #64748b;
-  --border:   #e8edf4;
-  --bg:       #f1f5f9;
-  --card:     #ffffff;
-  color-scheme: light;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Segoe UI', 'Malgun Gothic', -apple-system, sans-serif;
-  background: var(--bg);
-  color: #1e293b;
-  min-height: 100vh;
-}
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --border:#c9d3e0; --text:#222;
+    --muted:#888; --accent:#3b6fe0; --head:#dce8fb; --head2:#eef3fc;
+    --outside:#f2f2f2; --entry-bg:#fff8d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background:var(--bg); color:var(--text);
+  }
+  header {
+    background:var(--card); border-bottom:1px solid var(--border);
+    padding:16px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    position:sticky; top:0; z-index:20;
+  }
+  header h1 { font-size:18px; margin:0; margin-right:8px; }
+  header .name-field { display:flex; align-items:center; gap:6px; font-size:14px; }
+  header input[type=text] {
+    padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:14px;
+  }
+  .btns { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  button {
+    padding:7px 14px; border-radius:6px; border:1px solid var(--border);
+    background:var(--card); cursor:pointer; font-size:13px;
+  }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button:hover { filter:brightness(0.97); }
 
-/* ── PWA 설치 배너 ─────────────────────────────────── */
-#pwa-banner {
-  display: none;
-  position: fixed;
-  bottom: 20px; left: 50%;
-  transform: translateX(-50%);
-  background: var(--navy);
-  color: white;
-  border-radius: 14px;
-  padding: 14px 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-  z-index: 9999;
-  width: calc(100% - 40px);
-  max-width: 480px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  animation: slideUp 0.3s ease;
-}
-@keyframes slideUp { from { transform: translateX(-50%) translateY(80px); opacity:0; } }
-#pwa-banner.hidden { display: none !important; }
-.pwa-icon { font-size: 28px; flex-shrink: 0; }
-.pwa-text { flex: 1; }
-.pwa-text strong { font-size: 14px; display: block; }
-.pwa-text span   { font-size: 12px; opacity: 0.75; }
-.pwa-btn {
-  background: var(--blue);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.pwa-close {
-  background: none; border: none; color: rgba(255,255,255,0.5);
-  font-size: 20px; cursor: pointer; flex-shrink: 0; line-height: 1;
-}
+  .controls {
+    display:flex; align-items:center; gap:10px; padding:14px 20px; background:var(--card);
+    border-bottom:1px solid var(--border); flex-wrap:wrap;
+  }
+  .controls select {
+    padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px;
+  }
+  .controls .range-label { font-size:13px; color:var(--muted); margin-left:4px; }
 
-/* ── COVER ─────────────────────────────────────────── */
-.cover {
-  background: linear-gradient(135deg, #0a1c3e 0%, #1a3f82 45%, #1d4ed8 100%);
-  padding: 38px 56px 46px;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-.orb { position:absolute; border-radius:50%; pointer-events:none; }
-.orb1 { top:-80px; right:-60px;  width:320px; height:320px; background:rgba(255,255,255,0.04); }
-.orb2 { bottom:-100px; left:36%; width:280px; height:280px; background:rgba(255,255,255,0.03); }
-.orb3 { top:10px; left:52%;      width:130px; height:130px; background:rgba(255,255,255,0.025); }
+  main { padding:20px; max-width:900px; margin:0 auto; }
 
-.cover-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative; z-index: 1;
-}
-.company-pill {
-  background: #ffffff;
-  color: #0d2149;
-  border: none;
-  border-radius: 24px;
-  padding: 8px 20px;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.2px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
-  display: inline-block;
-}
-.company-pill:hover {
-  background: #e0eaff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-}
-.cover-meta { text-align:right; font-size:12px; opacity:0.72; line-height:1.7; }
-.cover-meta .week-big { display:block; font-size:26px; font-weight:800; opacity:1; letter-spacing:-0.5px; line-height:1.2; }
+  table.sched {
+    border-collapse:collapse; width:100%; background:var(--card);
+    table-layout:fixed;
+  }
+  table.sched th, table.sched td {
+    border:1px solid var(--border); text-align:center; font-size:13px;
+    padding:0; height:38px;
+  }
+  table.sched col.label { width:52px; }
+  table.sched col.hour { width:60px; }
+  th.month-head {
+    background:var(--head); font-weight:700; font-size:14px; padding:8px 0;
+  }
+  th.dow-head {
+    background:var(--head2); padding:6px 0; font-weight:700;
+  }
+  th.dow-head .datenum { display:block; font-size:13px; color:var(--accent); font-weight:700; }
+  th.dow-head.outside { color:var(--muted); background:var(--outside); }
+  th.dow-head.outside .datenum { color:var(--muted); }
+  td.section-label { background:var(--head2); font-weight:700; writing-mode:horizontal-tb; }
+  td.hour-label { background:#fbfbfb; color:var(--muted); font-size:12px; }
+  td.cell {
+    cursor:pointer; vertical-align:middle; padding:2px 4px; white-space:pre-wrap;
+    word-break:break-all; line-height:1.3; font-size:12px;
+  }
+  td.cell:hover { background:#f0f4ff; }
+  td.cell.filled { background:var(--entry-bg); font-weight:600; }
+  td.cell.outside { background:var(--outside); cursor:default; }
+  td.cell.outside:hover { background:var(--outside); }
 
-.cover-main { position:relative; z-index:1; margin-top:32px; }
-.cover-hello { font-size:14px; opacity:0.68; margin-bottom:5px; }
-.cover-name  { font-size:42px; font-weight:800; letter-spacing:-1.8px; line-height:1.1; }
-.cover-role  { font-size:15px; opacity:0.78; margin-top:7px; }
-.cover-line  { width:44px; height:3px; background:rgba(255,255,255,0.35); border-radius:2px; margin:20px 0; }
+  /* modal */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none;
+    align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .overlay.open { display:flex; }
+  .modal {
+    background:#fff; border-radius:12px; padding:20px; width:100%; max-width:380px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.2);
+  }
+  .modal h3 { margin:0 0 12px; font-size:16px; }
+  .modal label { font-size:13px; color:var(--muted); display:block; margin-bottom:4px; margin-top:10px; }
+  .modal select, .modal textarea {
+    width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px;
+    font-size:14px; font-family:inherit; resize:vertical;
+  }
+  .modal textarea { min-height:80px; }
+  .modal .actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+  .modal .actions .danger { color:#d9534f; margin-right:auto; background:none; border:none; }
 
-.stats { display:flex; gap:48px; position:relative; z-index:1; flex-wrap:wrap; }
-.stat-val { font-size:34px; font-weight:800; letter-spacing:-1px; }
-.stat-lbl { font-size:11px; opacity:0.58; margin-top:2px; letter-spacing:0.4px; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:30px 0; }
+  #importFile { display:none; }
 
-/* ── BODY ──────────────────────────────────────────── */
-.body { padding: 30px 56px 60px; }
+  .range-label.ok { color:#2a8a3e; font-weight:600; }
+  .range-label.err { color:#d9534f; font-weight:600; }
+  .gh-warning {
+    background:#fff6e5; border:1px solid #f0c96b; border-radius:6px; padding:10px 12px;
+    font-size:12px; line-height:1.5; color:#7a5b00; margin-top:12px;
+  }
+  .modal.wide { max-width:460px; }
 
-.sec-label {
-  font-size:10.5px; font-weight:700; color:#94a3b8;
-  letter-spacing:1.4px; text-transform:uppercase;
-  margin: 30px 0 14px;
-}
-.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 22px 24px;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 5px rgba(13,33,73,0.07);
-}
-.card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.card-title { font-size:14px; font-weight:700; color:var(--navy); }
-.badge { font-size:11px; padding:3px 11px; border-radius:10px; font-weight:600; }
-
-/* ── 일정 패널 ──────────────────────────────────────── */
-.notion-panel {
-  background:#f8fafc; border:1.5px dashed #cbd5e1;
-  border-radius:12px; padding:28px 20px; text-align:center;
-}
-.np-icon  { font-size:32px; margin-bottom:10px; }
-.np-title { font-size:14px; font-weight:700; color:#334155; margin-bottom:6px; }
-.np-desc  { font-size:12px; color:#94a3b8; margin-bottom:18px; line-height:1.6; }
-.np-item  {
-  display:flex; align-items:center; gap:10px;
-  padding:8px 12px;
-  background:white; border:1px solid var(--border); border-radius:8px;
-  margin-bottom:8px; font-size:12px; color:#475569; text-align:left;
-}
-.np-item .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.np-link {
-  display:inline-flex; align-items:center; gap:6px;
-  background:var(--navy); color:white; text-decoration:none;
-  font-size:12px; font-weight:600; padding:9px 20px; border-radius:10px;
-  transition: background 0.15s, transform 0.1s;
-}
-.np-link:hover { background:#1a3f82; transform:translateY(-1px); }
-.np-link svg { width:14px; height:14px; }
-
-/* ── 할일 관리 ──────────────────────────────────────── */
-.todo-add-row { display:flex; gap:8px; margin-bottom:12px; }
-.todo-input {
-  flex:1; padding:8px 12px;
-  border:1px solid var(--border); border-radius:8px;
-  font-size:13px; font-family:inherit; outline:none;
-  color:#1e293b; background:#fafbfc; transition:border 0.15s;
-}
-.todo-input:focus { border-color:var(--blue-m); background:white; }
-.todo-add-btn {
-  padding:8px 14px; background:var(--blue-m); color:white;
-  border:none; border-radius:8px; font-size:13px; font-weight:600;
-  cursor:pointer; transition:background 0.15s; white-space:nowrap;
-}
-.todo-add-btn:hover { background:#1d4ed8; }
-.prio-sel {
-  font-size:12px; border:1px solid var(--border); border-radius:7px;
-  padding:2px 6px; background:white; cursor:pointer; font-family:inherit;
-}
-.todo-list { list-style:none; }
-.todo-li {
-  display:flex; align-items:center; gap:10px;
-  padding:9px 10px; border-radius:8px;
-  font-size:13px; color:#334155; transition:background 0.1s; cursor:pointer;
-}
-.todo-li:hover { background:#f8fafc; }
-.todo-li.done .todo-text { text-decoration:line-through; color:#94a3b8; }
-.todo-check {
-  width:18px; height:18px; border:2px solid #cbd5e1; border-radius:5px;
-  flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  transition:all 0.15s; cursor:pointer;
-}
-.todo-check.checked { background:var(--green); border-color:var(--green); }
-.todo-check.checked::after { content:'✓'; color:white; font-size:11px; font-weight:700; }
-.todo-text { flex:1; }
-.todo-del {
-  width:20px; height:20px; border:none; background:none; color:#cbd5e1;
-  font-size:16px; cursor:pointer; border-radius:4px;
-  display:flex; align-items:center; justify-content:center;
-  transition:color 0.1s, background 0.1s; flex-shrink:0;
-}
-.todo-del:hover { color:#ef4444; background:#fef2f2; }
-.todo-empty { text-align:center; padding:28px; color:#94a3b8; font-size:13px; }
-
-/* ── 주간업무보고 ────────────────────────────────────── */
-.report-card {
-  background:var(--card); border-radius:16px; padding:24px 28px;
-  border:1px solid var(--border); box-shadow:0 1px 5px rgba(13,33,73,0.07);
-}
-.report-head {
-  display:flex; justify-content:space-between; align-items:center;
-  padding-bottom:18px; border-bottom:2px solid #f1f5f9;
-}
-.report-title { font-size:15px; font-weight:700; color:var(--navy); }
-.report-badge {
-  font-size:12px; background:var(--blue-l); color:var(--blue-m);
-  padding:4px 14px; border-radius:10px; font-weight:600;
-}
-.notion-btn {
-  display:inline-flex; align-items:center; gap:5px;
-  font-size:12px; color:var(--blue-m); text-decoration:none;
-  padding:5px 12px; border:1px solid #bfdbfe; border-radius:8px;
-  font-weight:500; transition:background 0.15s;
-}
-.notion-btn:hover { background:var(--blue-l); }
-.issue-box {
-  background:var(--orange-l); border:1px solid #fed7aa;
-  border-radius:12px; padding:14px 18px; margin:18px 0;
-}
-.issue-box-title { font-size:11px; font-weight:700; color:var(--orange); letter-spacing:.5px; margin-bottom:10px; }
-.issue-row { display:flex; gap:10px; align-items:flex-start; padding:5px 0; font-size:12px; color:#78350f; line-height:1.55; }
-.issue-num { font-size:13px; font-weight:700; color:var(--orange); flex-shrink:0; width:18px; }
-
-.member-grid { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid #f1f5f9; }
-.member-row { display:flex; gap:14px; padding:14px 10px; border-bottom:1px solid #f8fafc; }
-.member-row:nth-child(odd) { border-right:1px solid #f1f5f9; }
-.member-row:last-child { border-bottom:none; }
-.member-row:nth-last-child(2):nth-child(odd) { border-bottom:none; }
-.avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:white; flex-shrink:0; }
-.mem-body { flex:1; min-width:0; }
-.mem-name { font-size:13px; font-weight:700; color:#1e293b; margin-bottom:4px; }
-.mem-done { font-size:11.5px; color:#64748b; line-height:1.6; }
-.mem-footer { margin-top:6px; display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
-.mem-plan  { font-size:10.5px; background:var(--blue-l); color:var(--blue-m); padding:2px 9px; border-radius:6px; font-weight:500; }
-.mem-issue { font-size:10.5px; background:var(--orange-l); color:var(--orange); border:1px solid #fed7aa; padding:2px 8px; border-radius:6px; font-weight:500; }
-
-/* ── 허브 퀵 네비 ────────────────────────────────────── */
-.hub-nav {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 4px;
-}
-.hub-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1.5px solid transparent;
-  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
-  cursor: pointer;
-}
-.hub-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-}
-.hub-btn svg { width:16px; height:16px; flex-shrink:0; }
-
-.hub-btn-primary {
-  background: var(--navy);
-  color: white;
-  border-color: var(--navy);
-}
-.hub-btn-primary:hover { background: #1a3f82; }
-
-.hub-btn-notion {
-  background: white;
-  color: #334155;
-  border-color: var(--border);
-}
-.hub-btn-notion:hover { background: #f8fafc; border-color: #94a3b8; }
-
-.hub-btn-green {
-  background: var(--green-l);
-  color: var(--green);
-  border-color: #bbf7d0;
-}
-.hub-btn-green:hover { background: #dcfce7; }
-
-.hub-btn-purple {
-  background: #fdf4ff;
-  color: #7e22ce;
-  border-color: #e9d5ff;
-}
-.hub-btn-purple:hover { background: #f3e8ff; }
-
-/* ── FOOTER ────────────────────────────────────────── */
-.footer {
-  padding:16px 56px; font-size:11px; color:#94a3b8;
-  border-top:1px solid #e2e8f0;
-  display:flex; justify-content:space-between; align-items:center;
-  background:white;
-}
-.pwa-installed-badge {
-  display:none;
-  font-size:11px; background:var(--green-l); color:var(--green);
-  padding:3px 10px; border-radius:8px; font-weight:600;
-}
-
-/* ── RESPONSIVE ─────────────────────────────────────── */
-@media (max-width: 840px) {
-  .cover, .body, .footer { padding-left:20px; padding-right:20px; }
-  .grid2, .member-grid   { grid-template-columns:1fr; }
-  .stats                 { gap:24px; }
-  .cover-name            { font-size:30px; }
-  .member-row:nth-child(odd) { border-right:none; }
-  .report-head           { flex-direction:column; align-items:flex-start; gap:10px; }
-}
+  @media (max-width: 640px) {
+    header h1 { width:100%; }
+    .btns { margin-left:0; width:100%; }
+    table.sched th, table.sched td { font-size:11px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ── PWA 설치 배너 ── -->
-<div id="pwa-banner" class="hidden">
-  <span class="pwa-icon">🧬</span>
-  <div class="pwa-text">
-    <strong>홈 화면에 앱으로 추가</strong>
-    <span>언제든지 바로 열 수 있어요</span>
+<header>
+  <h1>📋 인턴 스케쥴</h1>
+  <div class="name-field">
+    <label for="internName">인턴명</label>
+    <input type="text" id="internName" placeholder="이름 입력">
   </div>
-  <button class="pwa-btn" id="pwa-install-btn">설치</button>
-  <button class="pwa-close" id="pwa-close-btn">×</button>
+  <div class="btns">
+    <button id="btnGhSettings">🔗 GitHub 설정</button>
+    <button id="btnGhSync">🔄 동기화</button>
+    <button id="btnExport">⬇ 내보내기</button>
+    <button id="btnImport">⬆ 가져오기</button>
+    <input type="file" id="importFile" accept="application/json">
+    <button id="btnPrint">🖨 인쇄</button>
+  </div>
+</header>
+
+<div class="controls">
+  <button id="prevWeek">◀ 이전 주</button>
+  <select id="weekSelect"></select>
+  <button id="nextWeek">다음 주 ▶</button>
+  <span class="range-label" id="rangeLabel"></span>
+  <span class="range-label" id="ghStatus"></span>
 </div>
 
-<!-- ═══ COVER ═══ -->
-<div class="cover">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
+<main>
+  <table class="sched" id="schedTable"></table>
+</main>
 
-  <div class="cover-top">
-    <a class="company-pill" href="https://gimcimmim-cpu.github.io/" target="_blank" style="text-decoration:none;cursor:pointer;">🧬 Cancer팀 업무허브</a>
-    <div class="cover-meta">
-      <strong class="week-big" id="weekBig">–</strong>
-      <span id="coverDate">–</span>
+<footer>셀을 클릭해 업무를 입력하세요. 종료 시간을 늦게 잡으면 셀이 자동으로 합쳐집니다.<br>
+데이터는 이 브라우저의 localStorage에 자동 저장되며, "GitHub 설정"으로 연동하면 저장할 때마다 저장소 파일에도 함께 커밋되어 팀원 모두 같은 최신 스케쥴을 볼 수 있습니다.</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modalTitle"></h3>
+    <label for="modalEnd">종료 시간</label>
+    <select id="modalEnd"></select>
+    <label for="modalText">업무 내용</label>
+    <textarea id="modalText" placeholder="예: i50 calprotectin 구동"></textarea>
+    <div class="actions">
+      <button class="danger" id="btnDelete">삭제</button>
+      <button id="btnCancel">취소</button>
+      <button class="primary" id="btnSave">저장</button>
     </div>
-  </div>
-
-  <div class="cover-main">
-    <div class="cover-hello">안녕하세요,</div>
-    <div class="cover-name">CHEOLMIN 님의 대시보드</div>
-    <div class="cover-role">Cancer팀 팀장 &middot; 체외진단 카트리지 개발 연구원 (2010 ~ 현재)</div>
-    <div class="cover-line"></div>
-  </div>
-
-  <div class="stats">
-    <div><div class="stat-val" id="statSch">0</div><div class="stat-lbl">이번 주 일정</div></div>
-    <div><div class="stat-val" id="statTodo">0</div><div class="stat-lbl">금주 할일</div></div>
-    <div><div class="stat-val">19주</div><div class="stat-lbl">2026년 현재</div></div>
-    <div><div class="stat-val">7명</div><div class="stat-lbl">Cancer팀 팀원</div></div>
-  </div>
-</div>
-
-<!-- ═══ BODY ═══ -->
-<div class="body">
-
-  <!-- 🔗 빠른 이동 -->
-  <div class="sec-label" style="margin-top:26px;">빠른 이동</div>
-  <div class="hub-nav">
-
-    <!-- 업무 허브 (메인) -->
-    <a class="hub-btn hub-btn-primary"
-       href="https://www.notion.so/31456761fb4d8139a59ce0350930146a"
-       target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-      🏠 나의 업무 허브
-    </a>
-
-    <!-- Cancer팀 업무 마스터 -->
-    <a class="hub-btn hub-btn-notion"
-       href="https://www.notion.so/2be56761fb4d802d8954dd651eeddc7d"
-       target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
-        <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
-      </svg>
-      🧬 Cancer팀 업무 마스터
-    </a>
-
-    <!-- 주간업무보고서 DB -->
-    <a class="hub-btn hub-btn-green"
-       href="https://www.notion.so/2bf56761fb4d80e39767c2ba0aab1aec"
-       target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-      📋 주간업무보고서
-    </a>
-
-    <!-- 허가 스케줄 -->
-    <a class="hub-btn hub-btn-purple"
-       href="https://www.notion.so/859e887c187a429cbfe14cd1e3366db9"
-       target="_blank">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8"  y1="2" x2="8"  y2="6"/>
-        <line x1="3"  y1="10" x2="21" y2="10"/>
-      </svg>
-      📅 허가 스케줄
-    </a>
-
-    <!-- 인허가 현황 대시보드 -->
-    <a class="hub-btn"
-       href="./cancer_approval_dashboard.html"
-       style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7" rx="1"/>
-        <rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/>
-        <rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
-      🌏 인허가 현황 대시보드
-    </a>
-
-  </div>
-
-  <!-- 동기화 상태 바 -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-    <div class="sec-label" style="margin:0">스케줄 &amp; 할일 현황</div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span id="syncStatus" style="font-size:11px;color:#94a3b8">데이터 로드 중…</span>
-      <button onclick="location.reload()" title="새로고침"
-        style="background:none;border:1px solid #e2e8f0;border-radius:8px;padding:4px 10px;font-size:11px;color:#64748b;cursor:pointer;display:flex;align-items:center;gap:4px;">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-        </svg>
-        새로고침
-      </button>
-    </div>
-  </div>
-
-  <div class="grid2">
-    <!-- 📅 일정 -->
-    <div class="card" id="schedule">
-      <div class="card-head">
-        <div class="card-title">📅 이번 주 일정</div>
-        <span class="badge" id="schBadge" style="background:#eff6ff;color:#1d4ed8">–</span>
-      </div>
-      <div id="schItems">
-        <div style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">
-          <div style="width:22px;height:22px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;"></div>
-          노션에서 일정 불러오는 중…
-        </div>
-      </div>
-      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;text-align:right;">
-        <a href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank"
-           style="font-size:11px;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;padding:3px 10px;border-radius:6px;">Notion 일정 DB →</a>
-      </div>
-    </div>
-
-    <!-- ✅ 할일 -->
-    <div class="card" id="todo">
-      <div class="card-head">
-        <div class="card-title">✅ 금주 할일 모니터링</div>
-        <span class="badge" id="todoBadge" style="background:#f0fdf4;color:#15803d">0개</span>
-      </div>
-
-      <div class="todo-add-row">
-        <input class="todo-input" id="todoInput" type="text" placeholder="새 할일 입력 후 Enter…" />
-        <select class="prio-sel" id="prioSel">
-          <option value="🔴">🔴 긴급</option>
-          <option value="🟠">🟠 높음</option>
-          <option value="🟡" selected>🟡 보통</option>
-          <option value="🟢">🟢 낮음</option>
-        </select>
-        <button class="todo-add-btn" onclick="addTodo()">추가</button>
-      </div>
-      <ul class="todo-list" id="todoList"></ul>
-      <div class="todo-empty" id="todoEmpty">이번 주 할일을 입력해 보세요 📝</div>
-
-      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:11px;color:#94a3b8">주차별로 자동 저장됩니다</span>
-        <a href="https://www.notion.so/8a3af724ea954f799563a9b6c74ccf67" target="_blank" style="font-size:11px;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;padding:3px 10px;border-radius:6px;">Notion 할일 DB →</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 📋 주간보고 -->
-  <div class="sec-label">Cancer팀 주간업무보고</div>
-  <div class="report-card" id="report">
-    <div class="report-head">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <span class="report-title" id="reportTitle">📋 팀 업무보고 요약</span>
-        <span class="report-badge" id="reportPeriod">로드 중…</span>
-      </div>
-      <a class="notion-btn" id="reportLink" href="https://www.notion.so/2bf56761fb4d80e39767c2ba0aab1aec" target="_blank">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-        Notion 원문 보기
-      </a>
-    </div>
-    <div id="issueBox"></div>
-    <div class="member-grid" id="memberGrid"></div>
-  </div>
-
-</div><!-- /body -->
-
-<!-- ═══ FOOTER ═══ -->
-<div class="footer">
-  <span>바디텍메드 · Cancer팀 팀장 김철민</span>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span class="pwa-installed-badge" id="installedBadge">📲 앱 설치됨</span>
-    <span id="footerDate">–</span>
   </div>
 </div>
 
-<!-- ═══ SCRIPT ═══ -->
+<div class="overlay" id="ghOverlay">
+  <div class="modal wide">
+    <h3>GitHub 연동 설정</h3>
+    <label for="ghOwner">저장소 소유자 (username 또는 organization)</label>
+    <input type="text" id="ghOwner" placeholder="예: iwannafy">
+    <label for="ghRepo">저장소 이름</label>
+    <input type="text" id="ghRepo" placeholder="예: intern-schedule">
+    <label for="ghPath">데이터 파일 경로</label>
+    <input type="text" id="ghPath" placeholder="schedule-data.json" value="schedule-data.json">
+    <label for="ghBranch">브랜치</label>
+    <input type="text" id="ghBranch" placeholder="main" value="main">
+    <label for="ghToken">Personal Access Token (fine-grained)</label>
+    <input type="password" id="ghToken" placeholder="github_pat_...">
+    <div class="gh-warning">
+      ⚠️ 이 토큰은 브라우저에 저장되고 페이지 소스에서도 확인될 수 있습니다.<br>
+      반드시 <b>이 저장소 하나에만, Contents 읽기/쓰기 권한만</b> 부여한 fine-grained 토큰을 사용하세요.
+      계정 전체 권한이 있는 토큰(classic PAT)은 절대 넣지 마세요.
+    </div>
+    <div class="actions">
+      <button class="danger" id="btnGhDisconnect">연동 해제</button>
+      <button id="btnGhCancel">취소</button>
+      <button class="primary" id="btnGhSave">저장 &amp; 연결 테스트</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ─── 날짜 기본값 ─── */
-const DOW = ['일','월','화','수','목','금','토'];
-const now = new Date();
-const dw  = now.getDay();
-const mon = new Date(now); mon.setDate(now.getDate() + (dw===0?-6:1-dw)); mon.setHours(0,0,0,0);
-const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-const soy = new Date(now.getFullYear(), 0, 1);
-const wn  = Math.ceil(((now - soy) / 86400000 + soy.getDay() + 1) / 7);
+(function(){
+  const START = new Date(2026,6,1);   // 2026-07-01
+  const END   = new Date(2026,11,31); // 2026-12-31
+  const STORAGE_KEY = 'internSchedule_2026H2_v2';
+  const GH_CONFIG_KEY = 'internSchedule_gh_config_v1';
+  const DOW_LABEL = ['일','월','화','수','목','금','토'];
+  const SECTIONS = [
+    { name:'오전', hours:[8,9,10,11] },
+    { name:'오후', hours:[13,14,15,16] },
+  ];
+  const ALL_HOURS = SECTIONS.flatMap(s => s.hours);
 
-document.getElementById('weekBig').textContent   = `${wn}주차`;
-document.getElementById('coverDate').textContent  = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${DOW[now.getDay()]})`;
-document.getElementById('schBadge').textContent   = `${mon.getMonth()+1}/${mon.getDate()}~${sun.getMonth()+1}/${sun.getDate()}`;
+  let state = loadState();
 
-function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ─── 일정 렌더 ─── */
-const TYPE_STYLE = {
-  '📅 약속': {bg:'#eff6ff',c:'#1d4ed8'}, '📅 회의': {bg:'#eff6ff',c:'#1d4ed8'},
-  '🎉 이벤트':{bg:'#fdf4ff',c:'#7e22ce'}, '🔁 루틴':{bg:'#f0fdf4',c:'#15803d'},
-  '🏥 의료': {bg:'#fff1f2',c:'#be123c'}, '✈️ 여행':{bg:'#fff7ed',c:'#c2410c'},
-  '📚 공부': {bg:'#fefce8',c:'#a16207'},
-};
-function renderSchedule(items) {
-  const el = document.getElementById('schItems');
-  document.getElementById('statSch').textContent = items.length;
-  document.getElementById('schBadge').textContent = `${items.length}건`;
-  if (!items.length) {
-    el.innerHTML = `<div style="text-align:center;padding:28px 16px;">
-      <div style="font-size:28px;margin-bottom:8px">📭</div>
-      <div style="font-size:13px;color:#94a3b8;margin-bottom:14px">이번 주 등록된 일정이 없습니다</div>
-      <a class="np-link" href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-        노션에서 일정 추가
-      </a></div>`;
-    return;
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e){ console.warn('load failed', e); }
+    return { name:'', entries:{} }; // entries[dateStr] = [{start,len,text}]
   }
-  el.innerHTML = items.map(item => {
-    const d   = new Date(item.date + 'T00:00:00');
-    const ts  = TYPE_STYLE[item.type] || {bg:'#f1f5f9',c:'#64748b'};
-    const done= item.done ? 'opacity:0.45;text-decoration:line-through;' : '';
-    return `<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f1f5f9;">
-      <div style="min-width:46px;background:#eff6ff;border-radius:10px;padding:6px 4px;text-align:center;flex-shrink:0;">
-        <div style="font-size:20px;font-weight:800;color:#1d4ed8;line-height:1.1">${d.getDate()}</div>
-        <div style="font-size:10px;color:#64748b">${DOW[d.getDay()]}요</div>
-      </div>
-      <div style="flex:1;min-width:0;${done}">
-        <div style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(item.title)}</div>
-        <div style="font-size:11px;color:#94a3b8;margin-top:2px">${d.getMonth()+1}/${d.getDate()} (${DOW[d.getDay()]})${item.place ? ' · ' + escHtml(item.place) : ''}</div>
-        ${item.type ? `<span style="font-size:10px;padding:2px 7px;border-radius:5px;display:inline-block;margin-top:4px;font-weight:600;background:${ts.bg};color:${ts.c}">${escHtml(item.type)}</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
+  function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-/* ─── 주간보고 렌더 ─── */
-function renderReport(rpt) {
-  if (!rpt) return;
-  document.getElementById('reportTitle').textContent = `📋 ${rpt.week ? rpt.week+'주차 ' : ''}팀 업무보고 요약`;
-  document.getElementById('reportPeriod').textContent = rpt.period || '';
-  if (rpt.url) document.getElementById('reportLink').href = rpt.url;
+  // ---- GitHub sync ----
+  let ghSha = null;
+  function loadGhConfig(){
+    try {
+      const raw = localStorage.getItem(GH_CONFIG_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e){ console.warn('gh config load failed', e); }
+    return null;
+  }
+  function saveGhConfig(cfg){ localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(cfg)); }
+  function clearGhConfig(){ localStorage.removeItem(GH_CONFIG_KEY); ghSha = null; }
+  let ghConfig = loadGhConfig();
+  function isGhConfigured(){ return !!(ghConfig && ghConfig.owner && ghConfig.repo && ghConfig.token); }
 
-  // 이슈
-  const ib = document.getElementById('issueBox');
-  if (rpt.issues && rpt.issues.length) {
-    ib.innerHTML = `<div class="issue-box">
-      <div class="issue-box-title">⚠️ 이번 주 주요 이슈 — ${rpt.issues.length}건</div>
-      ${rpt.issues.map(i=>`<div class="issue-row">
-        <span class="issue-num">${escHtml(i.num)}</span>
-        <span><strong>${escHtml(i.title)}</strong> (${escHtml(i.owner)}) — ${escHtml(i.desc)}</span>
-      </div>`).join('')}
-    </div>`;
+  function b64EncodeUnicode(str){
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m,p1) => String.fromCharCode(parseInt(p1,16))));
+  }
+  function b64DecodeUnicode(str){
+    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
   }
 
-  // 팀원
-  const mg = document.getElementById('memberGrid');
-  mg.innerHTML = '';
-  (rpt.members || []).forEach(m => {
-    const div = document.createElement('div');
-    div.className = 'member-row';
-    div.innerHTML = `
-      <div class="avatar" style="background:${m.color}">${escHtml(m.init)}</div>
-      <div class="mem-body">
-        <div class="mem-name">${escHtml(m.name)}</div>
-        <div class="mem-done">${escHtml(m.done)}</div>
-        <div class="mem-footer">
-          <span class="mem-plan">→ ${escHtml(m.plan)}</span>
-          ${m.issue ? `<span class="mem-issue">⚠️ ${escHtml(m.issue)}</span>` : ''}
-        </div>
-      </div>`;
-    mg.appendChild(div);
-  });
-}
+  function ghApiUrl(cfg){
+    return `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${cfg.path.split('/').map(encodeURIComponent).join('/')}`;
+  }
 
-/* ─── notion-data.json 로드 ─── */
-async function loadData() {
-  const status = document.getElementById('syncStatus');
-  const footer = document.getElementById('footerDate');
-  try {
-    const res  = await fetch(`./data/notion-data.json?_=${Date.now()}`);
-    if (!res.ok) throw new Error('fetch failed');
+  const ghStatusEl = document.getElementById('ghStatus');
+  function setGhStatus(text, kind){
+    ghStatusEl.textContent = text;
+    ghStatusEl.className = 'range-label' + (kind ? ' ' + kind : '');
+  }
+  function refreshGhStatusIdle(){
+    if (!isGhConfigured()){ setGhStatus('GitHub 연동 안 됨 (로컬에만 저장)', ''); return; }
+    setGhStatus(`🔗 ${ghConfig.owner}/${ghConfig.repo} 연동됨`, 'ok');
+  }
+
+  async function ghFetchRemote(cfg){
+    const res = await fetch(ghApiUrl(cfg) + `?ref=${encodeURIComponent(cfg.branch || 'main')}`, {
+      headers: {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github+json',
+      },
+    });
+    if (res.status === 404) return null; // file doesn't exist yet
+    if (!res.ok) throw new Error(`GitHub 읽기 실패 (${res.status})`);
     const data = await res.json();
+    ghSha = data.sha;
+    const content = b64DecodeUnicode(data.content.replace(/\n/g, ''));
+    return JSON.parse(content);
+  }
 
-    // 일정
-    renderSchedule(data.schedule || []);
-
-    // 주간보고
-    renderReport(data.weeklyReport);
-
-    // 마지막 업데이트 표시
-    if (data.lastUpdated) {
-      const d = new Date(data.lastUpdated);
-      const pad = n => String(n).padStart(2,'0');
-      const label = `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())} 기준`;
-      status.textContent = `✅ ${label}`;
-      status.style.color = '#16a34a';
-      footer.textContent = label;
+  async function ghPushRemote(cfg, message){
+    const body = {
+      message: message || '스케쥴 업데이트',
+      content: b64EncodeUnicode(JSON.stringify(state, null, 2)),
+      branch: cfg.branch || 'main',
+    };
+    if (ghSha) body.sha = ghSha;
+    const res = await fetch(ghApiUrl(cfg), {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok){
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`GitHub 저장 실패 (${res.status}) ${errBody}`);
     }
-  } catch(e) {
-    // JSON 없을 때 fallback
-    status.textContent = '⚠️ 데이터 없음 (GitHub Actions 설정 필요)';
-    status.style.color = '#c2410c';
-    footer.textContent = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('schItems').innerHTML =
-      `<div style="text-align:center;padding:28px 16px;">
-        <div style="font-size:13px;color:#94a3b8;margin-bottom:14px">⚠️ 데이터를 불러오지 못했습니다</div>
-        <a class="np-link" href="https://www.notion.so/10798dc7e6904dda839970ab97005f00" target="_blank">노션에서 직접 보기</a>
-      </div>`;
+    const data = await res.json();
+    ghSha = data.content.sha;
   }
-}
-loadData();
 
-/* ─── Service Worker 등록 ─── */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(reg => {
-      console.log('[PWA] Service Worker 등록 완료:', reg.scope);
-      // 업데이트 감지 시 자동 새로고침
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        nw.addEventListener('statechange', () => {
-          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-            nw.postMessage('SKIP_WAITING');
-            location.reload();
+  async function syncPush(message){
+    if (!isGhConfigured()) return;
+    setGhStatus('⏳ GitHub에 저장 중...', '');
+    try {
+      await ghPushRemote(ghConfig, message);
+      setGhStatus(`✅ GitHub에 저장됨 (${new Date().toLocaleTimeString('ko-KR')})`, 'ok');
+    } catch(e){
+      console.error(e);
+      setGhStatus('⚠ GitHub 저장 실패: ' + e.message, 'err');
+    }
+  }
+
+  let namePushTimer = null;
+  function schedulePush(){
+    if (!isGhConfigured()) return;
+    clearTimeout(namePushTimer);
+    namePushTimer = setTimeout(() => syncPush('인턴명 업데이트'), 800);
+  }
+
+  function fmt(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function inRange(d){ return d >= START && d <= END; }
+  function mondayOf(date){
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1 - day);
+    d.setDate(d.getDate() + diff);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  // ---- build week list (Mon-Fri) covering START..END ----
+  const weeks = [];
+  {
+    let cur = mondayOf(START);
+    const lastMonday = mondayOf(END);
+    while (cur <= lastMonday){
+      weeks.push(new Date(cur));
+      cur = new Date(cur); cur.setDate(cur.getDate()+7);
+    }
+  }
+
+  function weekDays(monday){
+    const arr = [];
+    for (let i=0;i<5;i++){
+      const d = new Date(monday); d.setDate(d.getDate()+i);
+      arr.push(d);
+    }
+    return arr;
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  let currentWeekIdx = Math.max(0, weeks.findIndex(w => {
+    const days = weekDays(w);
+    return days.some(d => d.getTime() === today.getTime());
+  }));
+  if (currentWeekIdx < 0) currentWeekIdx = 0;
+
+  // ---- header name ----
+  const nameInput = document.getElementById('internName');
+  nameInput.value = state.name || '';
+  nameInput.addEventListener('input', () => { state.name = nameInput.value; saveState(); schedulePush(); });
+
+  // ---- week select ----
+  const weekSelect = document.getElementById('weekSelect');
+  weeks.forEach((w, i) => {
+    const days = weekDays(w);
+    const opt = document.createElement('option');
+    const s = days[0], e = days[4];
+    opt.value = i;
+    opt.textContent = `${s.getMonth()+1}/${s.getDate()} ~ ${e.getMonth()+1}/${e.getDate()}`;
+    weekSelect.appendChild(opt);
+  });
+  weekSelect.addEventListener('change', () => { currentWeekIdx = Number(weekSelect.value); render(); });
+  document.getElementById('prevWeek').addEventListener('click', () => {
+    if (currentWeekIdx > 0){ currentWeekIdx--; render(); }
+  });
+  document.getElementById('nextWeek').addEventListener('click', () => {
+    if (currentWeekIdx < weeks.length-1){ currentWeekIdx++; render(); }
+  });
+
+  const table = document.getElementById('schedTable');
+  const rangeLabel = document.getElementById('rangeLabel');
+
+  function getBlocks(dateStr){ return state.entries[dateStr] || []; }
+
+  function computeOccupancy(dateStr){
+    const blocks = getBlocks(dateStr);
+    const startMap = {}; // hour -> len
+    const covered = {};  // hour -> true (covered by an earlier block, not the start)
+    blocks.forEach(b => {
+      startMap[b.start] = b;
+      for (let h=b.start+1; h<b.start+b.len; h++) covered[h] = true;
+    });
+    return { startMap, covered };
+  }
+
+  function sectionOf(hour){ return SECTIONS.find(s => s.hours.includes(hour)); }
+
+  function render(){
+    weekSelect.value = currentWeekIdx;
+    const monday = weeks[currentWeekIdx];
+    const days = weekDays(monday);
+
+    const months = [...new Set(days.map(d => d.getMonth()+1))];
+    const monthLabel = months.map(m => m+'월').join('/');
+    rangeLabel.textContent = `${days[0].getFullYear()}년 ${monthLabel}  |  2026.07.01 ~ 2026.12.31 기간 내에서만 입력 가능`;
+
+    table.innerHTML = '';
+    const colgroup = document.createElement('colgroup');
+    colgroup.innerHTML = '<col class="label"><col class="hour">' + '<col>'.repeat(5);
+    table.appendChild(colgroup);
+
+    // header row 1: month
+    const trMonth = document.createElement('tr');
+    const thBlank = document.createElement('th'); thBlank.colSpan = 2; thBlank.className='month-head';
+    trMonth.appendChild(thBlank);
+    const thMonth = document.createElement('th');
+    thMonth.colSpan = 5; thMonth.className = 'month-head';
+    thMonth.textContent = monthLabel;
+    trMonth.appendChild(thMonth);
+    table.appendChild(trMonth);
+
+    // header row 2: weekday + date
+    const trDow = document.createElement('tr');
+    trDow.appendChild(document.createElement('th'));
+    trDow.appendChild(document.createElement('th'));
+    days.forEach(d => {
+      const th = document.createElement('th');
+      th.className = 'dow-head' + (inRange(d) ? '' : ' outside');
+      const span = document.createElement('span');
+      span.className = 'datenum';
+      span.textContent = inRange(d) ? d.getDate() : '';
+      th.appendChild(span);
+      th.appendChild(document.createTextNode(DOW_LABEL[d.getDay()]));
+      trDow.appendChild(th);
+    });
+    table.appendChild(trDow);
+
+    // precompute occupancy per day
+    const occ = days.map(d => computeOccupancy(fmt(d)));
+
+    SECTIONS.forEach(section => {
+      section.hours.forEach((hour, hIdxInSection) => {
+        const tr = document.createElement('tr');
+        if (hIdxInSection === 0){
+          const tdLabel = document.createElement('td');
+          tdLabel.className = 'section-label';
+          tdLabel.rowSpan = section.hours.length;
+          tdLabel.textContent = section.name;
+          tr.appendChild(tdLabel);
+        }
+        const tdHour = document.createElement('td');
+        tdHour.className = 'hour-label';
+        tdHour.textContent = hour + ':00';
+        tr.appendChild(tdHour);
+
+        days.forEach((d, dIdx) => {
+          const dateStr = fmt(d);
+          const { startMap, covered } = occ[dIdx];
+          if (covered[hour]) return; // skip, covered by rowspan above
+
+          const td = document.createElement('td');
+          const outside = !inRange(d);
+          if (outside){
+            td.className = 'cell outside';
+            tr.appendChild(td);
+            return;
           }
+          const block = startMap[hour];
+          if (block){
+            td.rowSpan = block.len;
+            td.className = 'cell filled';
+            td.textContent = block.text;
+            td.addEventListener('click', () => openModal(dateStr, hour, block));
+          } else {
+            td.className = 'cell';
+            td.addEventListener('click', () => openModal(dateStr, hour, null));
+          }
+          tr.appendChild(td);
         });
+
+        table.appendChild(tr);
       });
-    })
-    .catch(err => console.warn('[PWA] SW 등록 실패:', err));
-}
-
-/* ─── PWA 설치 배너 ─── */
-let deferredPrompt = null;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  const banner = document.getElementById('pwa-banner');
-  banner.classList.remove('hidden');
-  banner.style.display = 'flex';
-});
-
-document.getElementById('pwa-install-btn').addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') {
-    document.getElementById('pwa-banner').classList.add('hidden');
-    document.getElementById('installedBadge').style.display = 'inline-block';
+    });
   }
-  deferredPrompt = null;
-});
 
-document.getElementById('pwa-close-btn').addEventListener('click', () => {
-  document.getElementById('pwa-banner').classList.add('hidden');
-});
+  // ---- modal ----
+  const overlay = document.getElementById('overlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalEnd = document.getElementById('modalEnd');
+  const modalText = document.getElementById('modalText');
+  let ctx = null; // { dateStr, hour, existing }
 
-window.addEventListener('appinstalled', () => {
-  document.getElementById('pwa-banner').classList.add('hidden');
-  document.getElementById('installedBadge').style.display = 'inline-block';
-  console.log('[PWA] 앱 설치 완료');
-});
+  function openModal(dateStr, hour, existing){
+    ctx = { dateStr, hour, existing };
+    const section = sectionOf(hour);
+    modalTitle.textContent = `${dateStr} ${hour}:00 부터`;
 
-/* standalone 모드 감지 */
-if (window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true) {
-  document.getElementById('installedBadge').style.display = 'inline-block';
-}
+    modalEnd.innerHTML = '';
+    section.hours.filter(h => h >= hour).forEach(h => {
+      const opt = document.createElement('option');
+      opt.value = h;
+      opt.textContent = h + ':00 까지';
+      modalEnd.appendChild(opt);
+    });
+
+    if (existing){
+      modalEnd.value = existing.start + existing.len - 1;
+      modalText.value = existing.text;
+    } else {
+      modalEnd.value = hour;
+      modalText.value = '';
+    }
+    overlay.classList.add('open');
+    modalText.focus();
+  }
+  function closeModal(){ overlay.classList.remove('open'); ctx = null; }
+
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  document.getElementById('btnSave').addEventListener('click', () => {
+    if (!ctx) return;
+    const { dateStr, hour, existing } = ctx;
+    const text = modalText.value.trim();
+    const endHour = Number(modalEnd.value);
+    const len = sectionOf(hour).hours.indexOf(endHour) - sectionOf(hour).hours.indexOf(hour) + 1;
+
+    let blocks = getBlocks(dateStr).filter(b => b !== existing);
+    // conflict check
+    const newEndExclusive = hour + len;
+    const overlap = blocks.some(b => hour < b.start + b.len && b.start < newEndExclusive);
+    if (overlap){
+      alert('선택한 시간대에 이미 다른 일정이 있습니다.');
+      return;
+    }
+    if (text){
+      blocks.push({ start:hour, len, text });
+      blocks.sort((a,b) => a.start - b.start);
+    }
+    if (blocks.length) state.entries[dateStr] = blocks;
+    else delete state.entries[dateStr];
+
+    saveState();
+    closeModal();
+    render();
+    syncPush(`${dateStr} 일정 저장`);
+  });
+
+  document.getElementById('btnDelete').addEventListener('click', () => {
+    if (!ctx) return;
+    const { dateStr, existing } = ctx;
+    if (existing){
+      const blocks = getBlocks(dateStr).filter(b => b !== existing);
+      if (blocks.length) state.entries[dateStr] = blocks;
+      else delete state.entries[dateStr];
+      saveState();
+      syncPush(`${dateStr} 일정 삭제`);
+    }
+    closeModal();
+    render();
+  });
+
+  // ---- export / import ----
+  document.getElementById('btnExport').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const nameForFile = (state.name || '인턴').replace(/[^\w가-힣]/g,'');
+    a.href = url;
+    a.download = `인턴스케줄_${nameForFile}_2026H2.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('btnImport').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (typeof parsed !== 'object' || !parsed.entries) throw new Error('invalid format');
+        state = { name: parsed.name || '', entries: parsed.entries || {} };
+        saveState();
+        nameInput.value = state.name;
+        render();
+        syncPush('로컬 파일에서 가져오기');
+        alert('가져오기가 완료되었습니다.');
+      } catch(err){
+        alert('올바른 JSON 파일이 아닙니다.');
+      }
+      importFile.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', () => window.print());
+
+  // ---- GitHub settings modal ----
+  const ghOverlay = document.getElementById('ghOverlay');
+  const ghOwnerInput = document.getElementById('ghOwner');
+  const ghRepoInput = document.getElementById('ghRepo');
+  const ghPathInput = document.getElementById('ghPath');
+  const ghBranchInput = document.getElementById('ghBranch');
+  const ghTokenInput = document.getElementById('ghToken');
+
+  function openGhModal(){
+    if (ghConfig){
+      ghOwnerInput.value = ghConfig.owner || '';
+      ghRepoInput.value = ghConfig.repo || '';
+      ghPathInput.value = ghConfig.path || 'schedule-data.json';
+      ghBranchInput.value = ghConfig.branch || 'main';
+      ghTokenInput.value = ghConfig.token || '';
+    }
+    ghOverlay.classList.add('open');
+  }
+  function closeGhModal(){ ghOverlay.classList.remove('open'); }
+
+  document.getElementById('btnGhSettings').addEventListener('click', openGhModal);
+  document.getElementById('btnGhCancel').addEventListener('click', closeGhModal);
+  ghOverlay.addEventListener('click', (e) => { if (e.target === ghOverlay) closeGhModal(); });
+
+  document.getElementById('btnGhDisconnect').addEventListener('click', () => {
+    clearGhConfig();
+    ghConfig = null;
+    refreshGhStatusIdle();
+    closeGhModal();
+  });
+
+  document.getElementById('btnGhSave').addEventListener('click', async () => {
+    const cfg = {
+      owner: ghOwnerInput.value.trim(),
+      repo: ghRepoInput.value.trim(),
+      path: (ghPathInput.value.trim() || 'schedule-data.json'),
+      branch: (ghBranchInput.value.trim() || 'main'),
+      token: ghTokenInput.value.trim(),
+    };
+    if (!cfg.owner || !cfg.repo || !cfg.token){
+      alert('저장소 소유자, 저장소 이름, 토큰은 필수입니다.');
+      return;
+    }
+    ghConfig = cfg;
+    saveGhConfig(cfg);
+    setGhStatus('⏳ 연결 확인 중...', '');
+    try {
+      const remote = await ghFetchRemote(cfg);
+      if (remote){
+        state = { name: remote.name || '', entries: remote.entries || {} };
+        saveState();
+        nameInput.value = state.name;
+        render();
+      } else {
+        await ghPushRemote(cfg, '초기 스케쥴 파일 생성');
+      }
+      refreshGhStatusIdle();
+      closeGhModal();
+      alert('GitHub 연동에 성공했습니다.');
+    } catch(e){
+      console.error(e);
+      setGhStatus('⚠ 연결 실패: ' + e.message, 'err');
+      alert('연결에 실패했습니다: ' + e.message);
+    }
+  });
+
+  document.getElementById('btnGhSync').addEventListener('click', async () => {
+    if (!isGhConfigured()){ openGhModal(); return; }
+    setGhStatus('⏳ GitHub에서 불러오는 중...', '');
+    try {
+      const remote = await ghFetchRemote(ghConfig);
+      if (remote){
+        state = { name: remote.name || '', entries: remote.entries || {} };
+        saveState();
+        nameInput.value = state.name;
+        render();
+      }
+      refreshGhStatusIdle();
+    } catch(e){
+      console.error(e);
+      setGhStatus('⚠ 불러오기 실패: ' + e.message, 'err');
+    }
+  });
+
+  // ---- bootstrap ----
+  async function bootstrap(){
+    render();
+    if (isGhConfigured()){
+      setGhStatus('⏳ GitHub에서 불러오는 중...', '');
+      try {
+        const remote = await ghFetchRemote(ghConfig);
+        if (remote){
+          state = { name: remote.name || '', entries: remote.entries || {} };
+          saveState();
+          nameInput.value = state.name;
+          render();
+        }
+        refreshGhStatusIdle();
+      } catch(e){
+        console.error(e);
+        setGhStatus('⚠ GitHub 불러오기 실패 (로컬 데이터 표시 중): ' + e.message, 'err');
+      }
+    } else {
+      refreshGhStatusIdle();
+    }
+  }
+  bootstrap();
+})();
 </script>
+
 </body>
 </html>
