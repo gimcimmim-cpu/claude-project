@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인턴 스케쥴 (2026.07.01 - 2026.12.31)</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --border:#c9d3e0; --text:#222;
+    --muted:#888; --accent:#3b6fe0; --head:#dce8fb; --head2:#eef3fc;
+    --outside:#f2f2f2; --entry-bg:#fff8d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background:var(--bg); color:var(--text);
+  }
+  header {
+    background:var(--card); border-bottom:1px solid var(--border);
+    padding:16px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    position:sticky; top:0; z-index:20;
+  }
+  header h1 { font-size:18px; margin:0; margin-right:8px; }
+  header .name-field { display:flex; align-items:center; gap:6px; font-size:14px; }
+  header input[type=text] {
+    padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:14px;
+  }
+  .btns { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  button {
+    padding:7px 14px; border-radius:6px; border:1px solid var(--border);
+    background:var(--card); cursor:pointer; font-size:13px;
+  }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button:hover { filter:brightness(0.97); }
+
+  .controls {
+    display:flex; align-items:center; gap:10px; padding:14px 20px; background:var(--card);
+    border-bottom:1px solid var(--border); flex-wrap:wrap;
+  }
+  .controls select {
+    padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:13px;
+  }
+  .controls .range-label { font-size:13px; color:var(--muted); margin-left:4px; }
+
+  main { padding:20px; max-width:900px; margin:0 auto; }
+
+  table.sched {
+    border-collapse:collapse; width:100%; background:var(--card);
+    table-layout:fixed;
+  }
+  table.sched th, table.sched td {
+    border:1px solid var(--border); text-align:center; font-size:13px;
+    padding:0; height:38px;
+  }
+  table.sched col.label { width:52px; }
+  table.sched col.hour { width:60px; }
+  th.month-head {
+    background:var(--head); font-weight:700; font-size:14px; padding:8px 0;
+  }
+  th.dow-head {
+    background:var(--head2); padding:6px 0; font-weight:700;
+  }
+  th.dow-head .datenum { display:block; font-size:13px; color:var(--accent); font-weight:700; }
+  th.dow-head.outside { color:var(--muted); background:var(--outside); }
+  th.dow-head.outside .datenum { color:var(--muted); }
+  td.section-label { background:var(--head2); font-weight:700; writing-mode:horizontal-tb; }
+  td.hour-label { background:#fbfbfb; color:var(--muted); font-size:12px; }
+  td.cell {
+    cursor:pointer; vertical-align:middle; padding:2px 4px; white-space:pre-wrap;
+    word-break:break-all; line-height:1.3; font-size:12px;
+  }
+  td.cell:hover { background:#f0f4ff; }
+  td.cell.filled { background:var(--entry-bg); font-weight:600; }
+  td.cell.outside { background:var(--outside); cursor:default; }
+  td.cell.outside:hover { background:var(--outside); }
+
+  /* modal */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none;
+    align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .overlay.open { display:flex; }
+  .modal {
+    background:#fff; border-radius:12px; padding:20px; width:100%; max-width:380px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.2);
+  }
+  .modal h3 { margin:0 0 12px; font-size:16px; }
+  .modal label { font-size:13px; color:var(--muted); display:block; margin-bottom:4px; margin-top:10px; }
+  .modal select, .modal textarea {
+    width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px;
+    font-size:14px; font-family:inherit; resize:vertical;
+  }
+  .modal textarea { min-height:80px; }
+  .modal .actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+  .modal .actions .danger { color:#d9534f; margin-right:auto; background:none; border:none; }
+
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:30px 0; }
+  #importFile { display:none; }
+
+  .range-label.ok { color:#2a8a3e; font-weight:600; }
+  .range-label.err { color:#d9534f; font-weight:600; }
+  .gh-warning {
+    background:#fff6e5; border:1px solid #f0c96b; border-radius:6px; padding:10px 12px;
+    font-size:12px; line-height:1.5; color:#7a5b00; margin-top:12px;
+  }
+  .modal.wide { max-width:460px; }
+
+  @media (max-width: 640px) {
+    header h1 { width:100%; }
+    .btns { margin-left:0; width:100%; }
+    table.sched th, table.sched td { font-size:11px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 인턴 스케쥴</h1>
+  <div class="name-field">
+    <label for="internName">인턴명</label>
+    <input type="text" id="internName" placeholder="이름 입력">
+  </div>
+  <div class="btns">
+    <button id="btnGhSettings">🔗 GitHub 설정</button>
+    <button id="btnGhSync">🔄 동기화</button>
+    <button id="btnExport">⬇ 내보내기</button>
+    <button id="btnImport">⬆ 가져오기</button>
+    <input type="file" id="importFile" accept="application/json">
+    <button id="btnPrint">🖨 인쇄</button>
+  </div>
+</header>
+
+<div class="controls">
+  <button id="prevWeek">◀ 이전 주</button>
+  <select id="weekSelect"></select>
+  <button id="nextWeek">다음 주 ▶</button>
+  <span class="range-label" id="rangeLabel"></span>
+  <span class="range-label" id="ghStatus"></span>
+</div>
+
+<main>
+  <table class="sched" id="schedTable"></table>
+</main>
+
+<footer>셀을 클릭해 업무를 입력하세요. 종료 시간을 늦게 잡으면 셀이 자동으로 합쳐집니다.<br>
+데이터는 이 브라우저의 localStorage에 자동 저장되며, "GitHub 설정"으로 연동하면 저장할 때마다 저장소 파일에도 함께 커밋되어 팀원 모두 같은 최신 스케쥴을 볼 수 있습니다.</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modalTitle"></h3>
+    <label for="modalEnd">종료 시간</label>
+    <select id="modalEnd"></select>
+    <label for="modalText">업무 내용</label>
+    <textarea id="modalText" placeholder="예: i50 calprotectin 구동"></textarea>
+    <div class="actions">
+      <button class="danger" id="btnDelete">삭제</button>
+      <button id="btnCancel">취소</button>
+      <button class="primary" id="btnSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ghOverlay">
+  <div class="modal wide">
+    <h3>GitHub 연동 설정</h3>
+    <label for="ghOwner">저장소 소유자 (username 또는 organization)</label>
+    <input type="text" id="ghOwner" placeholder="예: iwannafy">
+    <label for="ghRepo">저장소 이름</label>
+    <input type="text" id="ghRepo" placeholder="예: intern-schedule">
+    <label for="ghPath">데이터 파일 경로</label>
+    <input type="text" id="ghPath" placeholder="schedule-data.json" value="schedule-data.json">
+    <label for="ghBranch">브랜치</label>
+    <input type="text" id="ghBranch" placeholder="main" value="main">
+    <label for="ghToken">Personal Access Token (fine-grained)</label>
+    <input type="password" id="ghToken" placeholder="github_pat_...">
+    <div class="gh-warning">
+      ⚠️ 이 토큰은 브라우저에 저장되고 페이지 소스에서도 확인될 수 있습니다.<br>
+      반드시 <b>이 저장소 하나에만, Contents 읽기/쓰기 권한만</b> 부여한 fine-grained 토큰을 사용하세요.
+      계정 전체 권한이 있는 토큰(classic PAT)은 절대 넣지 마세요.
+    </div>
+    <div class="actions">
+      <button class="danger" id="btnGhDisconnect">연동 해제</button>
+      <button id="btnGhCancel">취소</button>
+      <button class="primary" id="btnGhSave">저장 &amp; 연결 테스트</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const START = new Date(2026,6,1);   // 2026-07-01
+  const END   = new Date(2026,11,31); // 2026-12-31
+  const STORAGE_KEY = 'internSchedule_2026H2_v2';
+  const GH_CONFIG_KEY = 'internSchedule_gh_config_v1';
+  const DOW_LABEL = ['일','월','화','수','목','금','토'];
+  const SECTIONS = [
+    { name:'오전', hours:[8,9,10,11] },
+    { name:'오후', hours:[13,14,15,16] },
+  ];
+  const ALL_HOURS = SECTIONS.flatMap(s => s.hours);
+
+  let state = loadState();
+
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e){ console.warn('load failed', e); }
+    return { name:'', entries:{} }; // entries[dateStr] = [{start,len,text}]
+  }
+  function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  // ---- GitHub sync ----
+  let ghSha = null;
+  function loadGhConfig(){
+    try {
+      const raw = localStorage.getItem(GH_CONFIG_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e){ console.warn('gh config load failed', e); }
+    return null;
+  }
+  function saveGhConfig(cfg){ localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(cfg)); }
+  function clearGhConfig(){ localStorage.removeItem(GH_CONFIG_KEY); ghSha = null; }
+  let ghConfig = loadGhConfig();
+  function isGhConfigured(){ return !!(ghConfig && ghConfig.owner && ghConfig.repo && ghConfig.token); }
+
+  function b64EncodeUnicode(str){
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m,p1) => String.fromCharCode(parseInt(p1,16))));
+  }
+  function b64DecodeUnicode(str){
+    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  }
+
+  function ghApiUrl(cfg){
+    return `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${cfg.path.split('/').map(encodeURIComponent).join('/')}`;
+  }
+
+  const ghStatusEl = document.getElementById('ghStatus');
+  function setGhStatus(text, kind){
+    ghStatusEl.textContent = text;
+    ghStatusEl.className = 'range-label' + (kind ? ' ' + kind : '');
+  }
+  function refreshGhStatusIdle(){
+    if (!isGhConfigured()){ setGhStatus('GitHub 연동 안 됨 (로컬에만 저장)', ''); return; }
+    setGhStatus(`🔗 ${ghConfig.owner}/${ghConfig.repo} 연동됨`, 'ok');
+  }
+
+  async function ghFetchRemote(cfg){
+    const res = await fetch(ghApiUrl(cfg) + `?ref=${encodeURIComponent(cfg.branch || 'main')}`, {
+      headers: {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github+json',
+      },
+    });
+    if (res.status === 404) return null; // file doesn't exist yet
+    if (!res.ok) throw new Error(`GitHub 읽기 실패 (${res.status})`);
+    const data = await res.json();
+    ghSha = data.sha;
+    const content = b64DecodeUnicode(data.content.replace(/\n/g, ''));
+    return JSON.parse(content);
+  }
+
+  async function ghPushRemote(cfg, message){
+    const body = {
+      message: message || '스케쥴 업데이트',
+      content: b64EncodeUnicode(JSON.stringify(state, null, 2)),
+      branch: cfg.branch || 'main',
+    };
+    if (ghSha) body.sha = ghSha;
+    const res = await fetch(ghApiUrl(cfg), {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok){
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`GitHub 저장 실패 (${res.status}) ${errBody}`);
+    }
+    const data = await res.json();
+    ghSha = data.content.sha;
+  }
+
+  async function syncPush(message){
+    if (!isGhConfigured()) return;
+    setGhStatus('⏳ GitHub에 저장 중...', '');
+    try {
+      await ghPushRemote(ghConfig, message);
+      setGhStatus(`✅ GitHub에 저장됨 (${new Date().toLocaleTimeString('ko-KR')})`, 'ok');
+    } catch(e){
+      console.error(e);
+      setGhStatus('⚠ GitHub 저장 실패: ' + e.message, 'err');
+    }
+  }
+
+  let namePushTimer = null;
+  function schedulePush(){
+    if (!isGhConfigured()) return;
+    clearTimeout(namePushTimer);
+    namePushTimer = setTimeout(() => syncPush('인턴명 업데이트'), 800);
+  }
+
+  function fmt(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function inRange(d){ return d >= START && d <= END; }
+  function mondayOf(date){
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1 - day);
+    d.setDate(d.getDate() + diff);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  // ---- build week list (Mon-Fri) covering START..END ----
+  const weeks = [];
+  {
+    let cur = mondayOf(START);
+    const lastMonday = mondayOf(END);
+    while (cur <= lastMonday){
+      weeks.push(new Date(cur));
+      cur = new Date(cur); cur.setDate(cur.getDate()+7);
+    }
+  }
+
+  function weekDays(monday){
+    const arr = [];
+    for (let i=0;i<5;i++){
+      const d = new Date(monday); d.setDate(d.getDate()+i);
+      arr.push(d);
+    }
+    return arr;
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  let currentWeekIdx = Math.max(0, weeks.findIndex(w => {
+    const days = weekDays(w);
+    return days.some(d => d.getTime() === today.getTime());
+  }));
+  if (currentWeekIdx < 0) currentWeekIdx = 0;
+
+  // ---- header name ----
+  const nameInput = document.getElementById('internName');
+  nameInput.value = state.name || '';
+  nameInput.addEventListener('input', () => { state.name = nameInput.value; saveState(); schedulePush(); });
+
+  // ---- week select ----
+  const weekSelect = document.getElementById('weekSelect');
+  weeks.forEach((w, i) => {
+    const days = weekDays(w);
+    const opt = document.createElement('option');
+    const s = days[0], e = days[4];
+    opt.value = i;
+    opt.textContent = `${s.getMonth()+1}/${s.getDate()} ~ ${e.getMonth()+1}/${e.getDate()}`;
+    weekSelect.appendChild(opt);
+  });
+  weekSelect.addEventListener('change', () => { currentWeekIdx = Number(weekSelect.value); render(); });
+  document.getElementById('prevWeek').addEventListener('click', () => {
+    if (currentWeekIdx > 0){ currentWeekIdx--; render(); }
+  });
+  document.getElementById('nextWeek').addEventListener('click', () => {
+    if (currentWeekIdx < weeks.length-1){ currentWeekIdx++; render(); }
+  });
+
+  const table = document.getElementById('schedTable');
+  const rangeLabel = document.getElementById('rangeLabel');
+
+  function getBlocks(dateStr){ return state.entries[dateStr] || []; }
+
+  function computeOccupancy(dateStr){
+    const blocks = getBlocks(dateStr);
+    const startMap = {}; // hour -> len
+    const covered = {};  // hour -> true (covered by an earlier block, not the start)
+    blocks.forEach(b => {
+      startMap[b.start] = b;
+      for (let h=b.start+1; h<b.start+b.len; h++) covered[h] = true;
+    });
+    return { startMap, covered };
+  }
+
+  function sectionOf(hour){ return SECTIONS.find(s => s.hours.includes(hour)); }
+
+  function render(){
+    weekSelect.value = currentWeekIdx;
+    const monday = weeks[currentWeekIdx];
+    const days = weekDays(monday);
+
+    const months = [...new Set(days.map(d => d.getMonth()+1))];
+    const monthLabel = months.map(m => m+'월').join('/');
+    rangeLabel.textContent = `${days[0].getFullYear()}년 ${monthLabel}  |  2026.07.01 ~ 2026.12.31 기간 내에서만 입력 가능`;
+
+    table.innerHTML = '';
+    const colgroup = document.createElement('colgroup');
+    colgroup.innerHTML = '<col class="label"><col class="hour">' + '<col>'.repeat(5);
+    table.appendChild(colgroup);
+
+    // header row 1: month
+    const trMonth = document.createElement('tr');
+    const thBlank = document.createElement('th'); thBlank.colSpan = 2; thBlank.className='month-head';
+    trMonth.appendChild(thBlank);
+    const thMonth = document.createElement('th');
+    thMonth.colSpan = 5; thMonth.className = 'month-head';
+    thMonth.textContent = monthLabel;
+    trMonth.appendChild(thMonth);
+    table.appendChild(trMonth);
+
+    // header row 2: weekday + date
+    const trDow = document.createElement('tr');
+    trDow.appendChild(document.createElement('th'));
+    trDow.appendChild(document.createElement('th'));
+    days.forEach(d => {
+      const th = document.createElement('th');
+      th.className = 'dow-head' + (inRange(d) ? '' : ' outside');
+      const span = document.createElement('span');
+      span.className = 'datenum';
+      span.textContent = inRange(d) ? d.getDate() : '';
+      th.appendChild(span);
+      th.appendChild(document.createTextNode(DOW_LABEL[d.getDay()]));
+      trDow.appendChild(th);
+    });
+    table.appendChild(trDow);
+
+    // precompute occupancy per day
+    const occ = days.map(d => computeOccupancy(fmt(d)));
+
+    SECTIONS.forEach(section => {
+      section.hours.forEach((hour, hIdxInSection) => {
+        const tr = document.createElement('tr');
+        if (hIdxInSection === 0){
+          const tdLabel = document.createElement('td');
+          tdLabel.className = 'section-label';
+          tdLabel.rowSpan = section.hours.length;
+          tdLabel.textContent = section.name;
+          tr.appendChild(tdLabel);
+        }
+        const tdHour = document.createElement('td');
+        tdHour.className = 'hour-label';
+        tdHour.textContent = hour + ':00';
+        tr.appendChild(tdHour);
+
+        days.forEach((d, dIdx) => {
+          const dateStr = fmt(d);
+          const { startMap, covered } = occ[dIdx];
+          if (covered[hour]) return; // skip, covered by rowspan above
+
+          const td = document.createElement('td');
+          const outside = !inRange(d);
+          if (outside){
+            td.className = 'cell outside';
+            tr.appendChild(td);
+            return;
+          }
+          const block = startMap[hour];
+          if (block){
+            td.rowSpan = block.len;
+            td.className = 'cell filled';
+            td.textContent = block.text;
+            td.addEventListener('click', () => openModal(dateStr, hour, block));
+          } else {
+            td.className = 'cell';
+            td.addEventListener('click', () => openModal(dateStr, hour, null));
+          }
+          tr.appendChild(td);
+        });
+
+        table.appendChild(tr);
+      });
+    });
+  }
+
+  // ---- modal ----
+  const overlay = document.getElementById('overlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalEnd = document.getElementById('modalEnd');
+  const modalText = document.getElementById('modalText');
+  let ctx = null; // { dateStr, hour, existing }
+
+  function openModal(dateStr, hour, existing){
+    ctx = { dateStr, hour, existing };
+    const section = sectionOf(hour);
+    modalTitle.textContent = `${dateStr} ${hour}:00 부터`;
+
+    modalEnd.innerHTML = '';
+    section.hours.filter(h => h >= hour).forEach(h => {
+      const opt = document.createElement('option');
+      opt.value = h;
+      opt.textContent = h + ':00 까지';
+      modalEnd.appendChild(opt);
+    });
+
+    if (existing){
+      modalEnd.value = existing.start + existing.len - 1;
+      modalText.value = existing.text;
+    } else {
+      modalEnd.value = hour;
+      modalText.value = '';
+    }
+    overlay.classList.add('open');
+    modalText.focus();
+  }
+  function closeModal(){ overlay.classList.remove('open'); ctx = null; }
+
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  document.getElementById('btnSave').addEventListener('click', () => {
+    if (!ctx) return;
+    const { dateStr, hour, existing } = ctx;
+    const text = modalText.value.trim();
+    const endHour = Number(modalEnd.value);
+    const len = sectionOf(hour).hours.indexOf(endHour) - sectionOf(hour).hours.indexOf(hour) + 1;
+
+    let blocks = getBlocks(dateStr).filter(b => b !== existing);
+    // conflict check
+    const newEndExclusive = hour + len;
+    const overlap = blocks.some(b => hour < b.start + b.len && b.start < newEndExclusive);
+    if (overlap){
+      alert('선택한 시간대에 이미 다른 일정이 있습니다.');
+      return;
+    }
+    if (text){
+      blocks.push({ start:hour, len, text });
+      blocks.sort((a,b) => a.start - b.start);
+    }
+    if (blocks.length) state.entries[dateStr] = blocks;
+    else delete state.entries[dateStr];
+
+    saveState();
+    closeModal();
+    render();
+    syncPush(`${dateStr} 일정 저장`);
+  });
+
+  document.getElementById('btnDelete').addEventListener('click', () => {
+    if (!ctx) return;
+    const { dateStr, existing } = ctx;
+    if (existing){
+      const blocks = getBlocks(dateStr).filter(b => b !== existing);
+      if (blocks.length) state.entries[dateStr] = blocks;
+      else delete state.entries[dateStr];
+      saveState();
+      syncPush(`${dateStr} 일정 삭제`);
+    }
+    closeModal();
+    render();
+  });
+
+  // ---- export / import ----
+  document.getElementById('btnExport').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const nameForFile = (state.name || '인턴').replace(/[^\w가-힣]/g,'');
+    a.href = url;
+    a.download = `인턴스케줄_${nameForFile}_2026H2.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('btnImport').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (typeof parsed !== 'object' || !parsed.entries) throw new Error('invalid format');
+        state = { name: parsed.name || '', entries: parsed.entries || {} };
+        saveState();
+        nameInput.value = state.name;
+        render();
+        syncPush('로컬 파일에서 가져오기');
+        alert('가져오기가 완료되었습니다.');
+      } catch(err){
+        alert('올바른 JSON 파일이 아닙니다.');
+      }
+      importFile.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', () => window.print());
+
+  // ---- GitHub settings modal ----
+  const ghOverlay = document.getElementById('ghOverlay');
+  const ghOwnerInput = document.getElementById('ghOwner');
+  const ghRepoInput = document.getElementById('ghRepo');
+  const ghPathInput = document.getElementById('ghPath');
+  const ghBranchInput = document.getElementById('ghBranch');
+  const ghTokenInput = document.getElementById('ghToken');
+
+  function openGhModal(){
+    if (ghConfig){
+      ghOwnerInput.value = ghConfig.owner || '';
+      ghRepoInput.value = ghConfig.repo || '';
+      ghPathInput.value = ghConfig.path || 'schedule-data.json';
+      ghBranchInput.value = ghConfig.branch || 'main';
+      ghTokenInput.value = ghConfig.token || '';
+    }
+    ghOverlay.classList.add('open');
+  }
+  function closeGhModal(){ ghOverlay.classList.remove('open'); }
+
+  document.getElementById('btnGhSettings').addEventListener('click', openGhModal);
+  document.getElementById('btnGhCancel').addEventListener('click', closeGhModal);
+  ghOverlay.addEventListener('click', (e) => { if (e.target === ghOverlay) closeGhModal(); });
+
+  document.getElementById('btnGhDisconnect').addEventListener('click', () => {
+    clearGhConfig();
+    ghConfig = null;
+    refreshGhStatusIdle();
+    closeGhModal();
+  });
+
+  document.getElementById('btnGhSave').addEventListener('click', async () => {
+    const cfg = {
+      owner: ghOwnerInput.value.trim(),
+      repo: ghRepoInput.value.trim(),
+      path: (ghPathInput.value.trim() || 'schedule-data.json'),
+      branch: (ghBranchInput.value.trim() || 'main'),
+      token: ghTokenInput.value.trim(),
+    };
+    if (!cfg.owner || !cfg.repo || !cfg.token){
+      alert('저장소 소유자, 저장소 이름, 토큰은 필수입니다.');
+      return;
+    }
+    ghConfig = cfg;
+    saveGhConfig(cfg);
+    setGhStatus('⏳ 연결 확인 중...', '');
+    try {
+      const remote = await ghFetchRemote(cfg);
+      if (remote){
+        state = { name: remote.name || '', entries: remote.entries || {} };
+        saveState();
+        nameInput.value = state.name;
+        render();
+      } else {
+        await ghPushRemote(cfg, '초기 스케쥴 파일 생성');
+      }
+      refreshGhStatusIdle();
+      closeGhModal();
+      alert('GitHub 연동에 성공했습니다.');
+    } catch(e){
+      console.error(e);
+      setGhStatus('⚠ 연결 실패: ' + e.message, 'err');
+      alert('연결에 실패했습니다: ' + e.message);
+    }
+  });
+
+  document.getElementById('btnGhSync').addEventListener('click', async () => {
+    if (!isGhConfigured()){ openGhModal(); return; }
+    setGhStatus('⏳ GitHub에서 불러오는 중...', '');
+    try {
+      const remote = await ghFetchRemote(ghConfig);
+      if (remote){
+        state = { name: remote.name || '', entries: remote.entries || {} };
+        saveState();
+        nameInput.value = state.name;
+        render();
+      }
+      refreshGhStatusIdle();
+    } catch(e){
+      console.error(e);
+      setGhStatus('⚠ 불러오기 실패: ' + e.message, 'err');
+    }
+  });
+
+  // ---- bootstrap ----
+  async function bootstrap(){
+    render();
+    if (isGhConfigured()){
+      setGhStatus('⏳ GitHub에서 불러오는 중...', '');
+      try {
+        const remote = await ghFetchRemote(ghConfig);
+        if (remote){
+          state = { name: remote.name || '', entries: remote.entries || {} };
+          saveState();
+          nameInput.value = state.name;
+          render();
+        }
+        refreshGhStatusIdle();
+      } catch(e){
+        console.error(e);
+        setGhStatus('⚠ GitHub 불러오기 실패 (로컬 데이터 표시 중): ' + e.message, 'err');
+      }
+    } else {
+      refreshGhStatusIdle();
+    }
+  }
+  bootstrap();
+})();
+</script>
+
+</body>
+</html>
