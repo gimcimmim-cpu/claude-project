@@ -142,6 +142,8 @@
     background:var(--head2); border:1px solid var(--border); border-radius:6px; padding:10px 12px;
     font-size:12px; line-height:1.5; color:var(--muted); margin-top:12px;
   }
+  .gh-copy-row { display:flex; gap:8px; margin-top:12px; }
+  .gh-copy-row button { flex:1; font-size:12px; }
   .modal.wide { max-width:460px; }
 
   .intern-tabs {
@@ -269,6 +271,15 @@
       ⚠️ 이 토큰은 브라우저에 저장되고 페이지 소스에서도 확인될 수 있습니다.<br>
       반드시 <b>이 저장소 하나에만, Contents 읽기/쓰기 권한만</b> 부여한 fine-grained 토큰을 사용하세요.
       계정 전체 권한이 있는 토큰(classic PAT)은 절대 넣지 마세요.
+    </div>
+    <div class="gh-copy-row">
+      <button id="btnGhCopyConfig">📋 이 설정 복사하기</button>
+      <button id="btnGhPasteConfig">📥 붙여넣기로 채우기</button>
+    </div>
+    <div class="gh-warning">
+      💬 다른 브라우저/기기에 똑같이 연동하려면, 이미 설정된 브라우저에서 "이 설정 복사하기"를 누른 뒤
+      그 값을 <b>카카오톡 등 비공개 채널로</b> 전달하고, 새 브라우저의 이 화면에서 "붙여넣기로 채우기"를 누르세요.
+      복사된 값에는 토큰이 그대로 들어있으니 공개 채팅방 등에는 올리지 마세요.
     </div>
     <div class="actions">
       <button class="danger" id="btnGhDisconnect">연동 해제</button>
@@ -876,6 +887,50 @@
     ghConfig = null;
     refreshGhStatusIdle();
     closeGhModal();
+  });
+
+  const GH_CONFIG_SHARE_PREFIX = 'GHCFG1:';
+
+  document.getElementById('btnGhCopyConfig').addEventListener('click', async () => {
+    const cfg = {
+      owner: ghOwnerInput.value.trim(),
+      repo: ghRepoInput.value.trim(),
+      path: (ghPathInput.value.trim() || 'schedule-data.json'),
+      branch: (ghBranchInput.value.trim() || 'main'),
+      token: ghTokenInput.value.trim(),
+    };
+    if (!cfg.owner || !cfg.repo || !cfg.token){
+      alert('복사할 내용이 없습니다. 저장소 소유자/이름/토큰을 먼저 입력하세요.');
+      return;
+    }
+    const shareText = GH_CONFIG_SHARE_PREFIX + b64EncodeUnicode(JSON.stringify(cfg));
+    try {
+      await navigator.clipboard.writeText(shareText);
+      alert('클립보드에 복사되었습니다.\n비공개 채널(카카오톡 개인 메시지 등)로 전달하세요.\n\n⚠️ 토큰이 그대로 포함되어 있으니 공개된 곳에는 올리지 마세요.');
+    } catch(e){
+      prompt('클립보드 복사에 실패했습니다. 아래 값을 직접 복사하세요:', shareText);
+    }
+  });
+
+  document.getElementById('btnGhPasteConfig').addEventListener('click', () => {
+    const input = prompt('전달받은 설정 값을 붙여넣으세요:');
+    if (!input) return;
+    const trimmed = input.trim();
+    if (!trimmed.startsWith(GH_CONFIG_SHARE_PREFIX)){
+      alert('올바른 설정 값이 아닙니다.');
+      return;
+    }
+    try {
+      const cfg = JSON.parse(b64DecodeUnicode(trimmed.slice(GH_CONFIG_SHARE_PREFIX.length)));
+      ghOwnerInput.value = cfg.owner || '';
+      ghRepoInput.value = cfg.repo || '';
+      ghPathInput.value = cfg.path || 'schedule-data.json';
+      ghBranchInput.value = cfg.branch || 'main';
+      ghTokenInput.value = cfg.token || '';
+      alert('설정 값을 채웠습니다. "저장 & 연결 테스트"를 눌러 마무리하세요.');
+    } catch(e){
+      alert('설정 값을 읽는 데 실패했습니다.');
+    }
   });
 
   document.getElementById('btnGhSave').addEventListener('click', async () => {
