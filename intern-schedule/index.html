@@ -53,23 +53,23 @@
   }
   header {
     background:var(--card); border-bottom:1px solid var(--border);
-    padding:16px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:9px 16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
     position:sticky; top:0; z-index:20;
   }
-  header h1 { font-size:18px; margin:0; }
-  .hdr-center { flex:1; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; }
-  header .name-field { display:flex; align-items:center; gap:6px; font-size:14px; flex-basis:100%; justify-content:flex-start; }
+  header h1 { font-size:14px; margin:0; white-space:nowrap; }
+  .hdr-center { flex:1; display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
+  header .name-field { display:flex; align-items:center; gap:5px; font-size:12px; flex-basis:100%; justify-content:flex-start; }
   header input[type=text] {
-    padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:14px;
+    padding:4px 8px; border:1px solid var(--border); border-radius:5px; font-size:12px;
   }
-  .btns { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+  .btns { margin-left:auto; display:flex; gap:5px; flex-wrap:wrap; }
   button {
-    padding:7px 14px; border-radius:6px; border:1px solid var(--border);
-    background:var(--card); cursor:pointer; font-size:13px;
+    padding:4px 9px; border-radius:5px; border:1px solid var(--border);
+    background:var(--card); cursor:pointer; font-size:11px; color:var(--text);
   }
   button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
   button:hover { filter:brightness(0.97); }
-  button#btnThemeToggle { font-size:16px; padding:7px 10px; }
+  button#btnThemeToggle { font-size:12px; padding:4px 7px; }
 
   .controls {
     display:flex; align-items:center; gap:10px; padding:14px 20px; background:var(--card);
@@ -157,19 +157,19 @@
 
   .dt-wrap {
     display:inline-flex; background:var(--head2); border:1px solid var(--border);
-    border-radius:12px; overflow:hidden; margin-left:4px;
+    border-radius:9px; overflow:hidden; margin-left:4px;
   }
   .dt-block {
-    display:flex; flex-direction:column; align-items:center; padding:6px 16px; position:relative;
+    display:flex; flex-direction:column; align-items:center; padding:4px 10px; position:relative;
   }
   .dt-block:not(:last-child)::after {
     content:''; position:absolute; right:0; top:20%; bottom:20%; width:1px; background:var(--border);
   }
-  .dt-label { font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:3px; }
+  .dt-label { font-size:8px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:2px; }
   .dt-value { font-weight:700; letter-spacing:-0.3px; line-height:1; }
-  .dt-value.date { font-size:13px; color:var(--text); }
-  .dt-value.time { font-size:16px; color:var(--accent); font-variant-numeric:tabular-nums; }
-  .dt-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+  .dt-value.date { font-size:11px; color:var(--text); }
+  .dt-value.time { font-size:13px; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .dt-sub { font-size:9px; color:var(--muted); margin-top:1px; }
 
   @media (max-width: 640px) {
     header h1 { width:100%; }
