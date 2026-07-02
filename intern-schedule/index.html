@@ -26,25 +26,29 @@
   }
 </script>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
   :root{
-    --navy:#0d2149; --blue:#1d4ed8; --blue-m:#2563eb;
-    --bg:#f1f5f9; --card:#ffffff; --border:#e8edf4; --text:#1e293b;
-    --muted:#64748b; --accent:#1d4ed8; --head:#dbe6fb; --head2:#eff6ff;
-    --outside:#f4f6f9; --entry-bg:#eaf1ff; --hover:#eff6ff; --ok:#15803d; --err:#c2410c;
-    --shadow:0 1px 5px rgba(13,33,73,0.07);
+    --blue:#0969da; --purple:#7535c5; --teal:#0578b8;
+    --bg:#f5f7fa; --card:#ffffff; --border:#c8cdd5; --text:#1a1e26;
+    --muted:#5a6375; --accent:#0969da; --head:#eaecf0; --head2:#eef4fb;
+    --outside:#eef0f3; --entry-bg:rgba(9,105,218,0.08); --hover:rgba(9,105,218,0.06);
+    --ok:#1a7f37; --err:#cf222e;
+    --shadow:0 2px 8px rgba(20,26,38,0.08);
     color-scheme: light;
   }
   html[data-theme="dark"]{
-    --navy:#0d2149; --blue:#3b82f6; --blue-m:#60a5fa;
-    --bg:#0b1220; --card:#111a2e; --border:#22304a; --text:#e5eaf3;
-    --muted:#8291ab; --accent:#3b82f6; --head:#16233d; --head2:#132036;
-    --outside:#0e1626; --entry-bg:rgba(59,130,246,0.16); --hover:#182640; --ok:#4ade80; --err:#fb923c;
-    --shadow:0 1px 8px rgba(0,0,0,0.35);
+    --blue:#58a6ff; --purple:#bc8cff; --teal:#39d3f5;
+    --bg:#0a0e14; --card:#141a23; --border:#2a313c; --text:#e6edf3;
+    --muted:#8b949e; --accent:#58a6ff; --head:#1e2530; --head2:#182230;
+    --outside:#0d1219; --entry-bg:rgba(88,166,255,0.14); --hover:rgba(88,166,255,0.07);
+    --ok:#3fb950; --err:#f85149;
+    --shadow:0 2px 8px rgba(0,0,0,0.35);
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
   body {
-    margin:0; font-family: 'Segoe UI', 'Malgun Gothic', -apple-system, sans-serif;
+    margin:0; font-family: 'Noto Sans KR', 'Segoe UI', 'Malgun Gothic', -apple-system, sans-serif;
     background:var(--bg); color:var(--text); transition:background .15s, color .15s;
   }
   header {
@@ -150,6 +154,22 @@
   .intern-tabs button.tab.add { border-style:dashed; color:var(--accent); background:transparent; }
   .intern-tabs button.tab.danger-tab { margin-left:auto; color:var(--err); background:transparent; border-color:var(--border); }
 
+  .dt-wrap {
+    display:inline-flex; background:var(--head2); border:1px solid var(--border);
+    border-radius:12px; overflow:hidden; margin-left:4px;
+  }
+  .dt-block {
+    display:flex; flex-direction:column; align-items:center; padding:6px 16px; position:relative;
+  }
+  .dt-block:not(:last-child)::after {
+    content:''; position:absolute; right:0; top:20%; bottom:20%; width:1px; background:var(--border);
+  }
+  .dt-label { font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:3px; }
+  .dt-value { font-weight:700; letter-spacing:-0.3px; line-height:1; }
+  .dt-value.date { font-size:13px; color:var(--text); }
+  .dt-value.time { font-size:16px; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .dt-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+
   @media (max-width: 640px) {
     header h1 { width:100%; }
     .btns { margin-left:0; width:100%; }
@@ -161,6 +181,18 @@
 
 <header>
   <h1>📋 인턴 스케쥴</h1>
+  <div class="dt-wrap">
+    <div class="dt-block">
+      <div class="dt-label">📅 날짜</div>
+      <div class="dt-value date" id="dtDate">—</div>
+      <div class="dt-sub" id="dtDay">—</div>
+    </div>
+    <div class="dt-block">
+      <div class="dt-label">🕐 현재 시간</div>
+      <div class="dt-value time" id="dtTime">--:--:--</div>
+      <div class="dt-sub">실시간</div>
+    </div>
+  </div>
   <div class="name-field">
     <label for="internName">선택된 인턴 이름</label>
     <input type="text" id="internName" placeholder="이름 입력">
@@ -789,6 +821,23 @@
     applyThemeIcon();
   });
   applyThemeIcon();
+
+  // ---- date / time widget ----
+  const MONTHS_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  function pad2clock(n){ return n < 10 ? '0'+n : ''+n; }
+  function updateClock(){
+    const now = new Date();
+    document.getElementById('dtTime').textContent =
+      pad2clock(now.getHours()) + ':' + pad2clock(now.getMinutes()) + ':' + pad2clock(now.getSeconds());
+  }
+  function updateDate(){
+    const now = new Date();
+    document.getElementById('dtDate').textContent = `${now.getFullYear()}년 ${MONTHS_KO[now.getMonth()]} ${now.getDate()}일`;
+    document.getElementById('dtDay').textContent = DOW_LABEL[now.getDay()] + '요일';
+  }
+  updateDate();
+  updateClock();
+  setInterval(updateClock, 1000);
 
   // ---- GitHub settings modal ----
   const ghOverlay = document.getElementById('ghOverlay');
