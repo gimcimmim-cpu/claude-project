@@ -53,12 +53,13 @@
   }
   header {
     background:var(--card); border-bottom:1px solid var(--border);
-    padding:9px 16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:9px 16px; display:flex; flex-direction:column; gap:8px;
     position:sticky; top:0; z-index:20;
   }
+  .hdr-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   header h1 { font-size:14px; margin:0; white-space:nowrap; }
   .hdr-center { flex:1; display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
-  header .name-field { display:flex; align-items:center; gap:5px; font-size:12px; flex-basis:100%; justify-content:flex-start; }
+  header .name-field { display:flex; align-items:center; gap:5px; font-size:12px; justify-content:flex-start; }
   header input[type=text] {
     padding:4px 8px; border:1px solid var(--border); border-radius:5px; font-size:12px;
   }
@@ -181,33 +182,37 @@
 <body>
 
 <header>
-  <div class="hdr-center">
-    <h1>📋 인턴 스케쥴</h1>
-    <div class="dt-wrap">
-      <div class="dt-block">
-        <div class="dt-label">📅 날짜</div>
-        <div class="dt-value date" id="dtDate">—</div>
-        <div class="dt-sub" id="dtDay">—</div>
-      </div>
-      <div class="dt-block">
-        <div class="dt-label">🕐 현재 시간</div>
-        <div class="dt-value time" id="dtTime">--:--:--</div>
-        <div class="dt-sub">실시간</div>
+  <div class="hdr-row hdr-top">
+    <div class="hdr-center">
+      <h1>📋 인턴 스케쥴</h1>
+      <div class="dt-wrap">
+        <div class="dt-block">
+          <div class="dt-label">📅 날짜</div>
+          <div class="dt-value date" id="dtDate">—</div>
+          <div class="dt-sub" id="dtDay">—</div>
+        </div>
+        <div class="dt-block">
+          <div class="dt-label">🕐 현재 시간</div>
+          <div class="dt-value time" id="dtTime">--:--:--</div>
+          <div class="dt-sub">실시간</div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="name-field">
-    <label for="internName">선택된 인턴 이름</label>
-    <input type="text" id="internName" placeholder="이름 입력">
-  </div>
-  <div class="btns">
-    <button id="btnThemeToggle" title="다크/라이트 모드 전환">🌙</button>
-    <button id="btnGhSettings">🔗 GitHub 설정</button>
-    <button id="btnGhSync">🔄 동기화</button>
-    <button id="btnExport">⬇ 내보내기</button>
-    <button id="btnImport">⬆ 가져오기</button>
-    <input type="file" id="importFile" accept="application/json">
-    <button id="btnPrint">🖨 인쇄</button>
+  <div class="hdr-row hdr-bottom">
+    <div class="name-field">
+      <label for="internName">선택된 인턴 이름</label>
+      <input type="text" id="internName" placeholder="이름 입력">
+    </div>
+    <div class="btns">
+      <button id="btnThemeToggle" title="다크/라이트 모드 전환">🌙</button>
+      <button id="btnGhSettings">🔗 GitHub 설정</button>
+      <button id="btnGhSync">🔄 동기화</button>
+      <button id="btnExport">⬇ 내보내기</button>
+      <button id="btnImport">⬆ 가져오기</button>
+      <input type="file" id="importFile" accept="application/json">
+      <button id="btnPrint">🖨 인쇄</button>
+    </div>
   </div>
 </header>
 
