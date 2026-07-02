@@ -56,7 +56,8 @@
     padding:16px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
     position:sticky; top:0; z-index:20;
   }
-  header h1 { font-size:18px; margin:0; margin-right:8px; }
+  header h1 { font-size:18px; margin:0; }
+  .hdr-center { flex:1; display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; }
   header .name-field { display:flex; align-items:center; gap:6px; font-size:14px; flex-basis:100%; justify-content:flex-start; }
   header input[type=text] {
     padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:14px;
@@ -180,17 +181,19 @@
 <body>
 
 <header>
-  <h1>📋 인턴 스케쥴</h1>
-  <div class="dt-wrap">
-    <div class="dt-block">
-      <div class="dt-label">📅 날짜</div>
-      <div class="dt-value date" id="dtDate">—</div>
-      <div class="dt-sub" id="dtDay">—</div>
-    </div>
-    <div class="dt-block">
-      <div class="dt-label">🕐 현재 시간</div>
-      <div class="dt-value time" id="dtTime">--:--:--</div>
-      <div class="dt-sub">실시간</div>
+  <div class="hdr-center">
+    <h1>📋 인턴 스케쥴</h1>
+    <div class="dt-wrap">
+      <div class="dt-block">
+        <div class="dt-label">📅 날짜</div>
+        <div class="dt-value date" id="dtDate">—</div>
+        <div class="dt-sub" id="dtDay">—</div>
+      </div>
+      <div class="dt-block">
+        <div class="dt-label">🕐 현재 시간</div>
+        <div class="dt-value time" id="dtTime">--:--:--</div>
+        <div class="dt-sub">실시간</div>
+      </div>
     </div>
   </div>
   <div class="name-field">
