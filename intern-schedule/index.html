@@ -6,14 +6,25 @@
 <title>인턴 스케쥴 (2026.07.01 - 2026.12.31)</title>
 <style>
   :root{
-    --bg:#f5f6f8; --card:#ffffff; --border:#c9d3e0; --text:#222;
-    --muted:#888; --accent:#3b6fe0; --head:#dce8fb; --head2:#eef3fc;
-    --outside:#f2f2f2; --entry-bg:#fff8d8;
+    --navy:#0d2149; --blue:#1d4ed8; --blue-m:#2563eb;
+    --bg:#f1f5f9; --card:#ffffff; --border:#e8edf4; --text:#1e293b;
+    --muted:#64748b; --accent:#1d4ed8; --head:#dbe6fb; --head2:#eff6ff;
+    --outside:#f4f6f9; --entry-bg:#eaf1ff; --hover:#eff6ff; --ok:#15803d; --err:#c2410c;
+    --shadow:0 1px 5px rgba(13,33,73,0.07);
+    color-scheme: light;
+  }
+  html[data-theme="dark"]{
+    --navy:#0d2149; --blue:#3b82f6; --blue-m:#60a5fa;
+    --bg:#0b1220; --card:#111a2e; --border:#22304a; --text:#e5eaf3;
+    --muted:#8291ab; --accent:#3b82f6; --head:#16233d; --head2:#132036;
+    --outside:#0e1626; --entry-bg:rgba(59,130,246,0.16); --hover:#182640; --ok:#4ade80; --err:#fb923c;
+    --shadow:0 1px 8px rgba(0,0,0,0.35);
+    color-scheme: dark;
   }
   * { box-sizing: border-box; }
   body {
-    margin:0; font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
-    background:var(--bg); color:var(--text);
+    margin:0; font-family: 'Segoe UI', 'Malgun Gothic', -apple-system, sans-serif;
+    background:var(--bg); color:var(--text); transition:background .15s, color .15s;
   }
   header {
     background:var(--card); border-bottom:1px solid var(--border);
@@ -32,6 +43,7 @@
   }
   button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
   button:hover { filter:brightness(0.97); }
+  button#btnThemeToggle { font-size:16px; padding:7px 10px; }
 
   .controls {
     display:flex; align-items:center; gap:10px; padding:14px 20px; background:var(--card);
@@ -46,7 +58,7 @@
 
   table.sched {
     border-collapse:collapse; width:100%; background:var(--card);
-    table-layout:fixed;
+    table-layout:fixed; border-radius:12px; overflow:hidden; box-shadow:var(--shadow);
   }
   table.sched th, table.sched td {
     border:1px solid var(--border); text-align:center; font-size:13px;
@@ -64,44 +76,44 @@
   th.dow-head.outside { color:var(--muted); background:var(--outside); }
   th.dow-head.outside .datenum { color:var(--muted); }
   td.section-label { background:var(--head2); font-weight:700; writing-mode:horizontal-tb; }
-  td.hour-label { background:#fbfbfb; color:var(--muted); font-size:12px; }
+  td.hour-label { background:var(--bg); color:var(--muted); font-size:12px; }
   td.cell {
     cursor:pointer; vertical-align:middle; padding:2px 4px; white-space:pre-wrap;
     word-break:break-all; line-height:1.3; font-size:12px;
   }
-  td.cell:hover { background:#f0f4ff; }
+  td.cell:hover { background:var(--hover); }
   td.cell.filled { background:var(--entry-bg); font-weight:600; }
   td.cell.outside { background:var(--outside); cursor:default; }
   td.cell.outside:hover { background:var(--outside); }
 
   /* modal */
   .overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none;
+    position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none;
     align-items:center; justify-content:center; z-index:50; padding:20px;
   }
   .overlay.open { display:flex; }
   .modal {
-    background:#fff; border-radius:12px; padding:20px; width:100%; max-width:380px;
-    box-shadow:0 10px 40px rgba(0,0,0,0.2);
+    background:var(--card); color:var(--text); border-radius:12px; padding:20px; width:100%; max-width:380px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.25);
   }
   .modal h3 { margin:0 0 12px; font-size:16px; }
   .modal label { font-size:13px; color:var(--muted); display:block; margin-bottom:4px; margin-top:10px; }
-  .modal select, .modal textarea {
+  .modal select, .modal textarea, .modal input[type=time] {
     width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px;
-    font-size:14px; font-family:inherit; resize:vertical;
+    font-size:14px; font-family:inherit; resize:vertical; background:var(--card); color:var(--text);
   }
   .modal textarea { min-height:80px; }
   .modal .actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
-  .modal .actions .danger { color:#d9534f; margin-right:auto; background:none; border:none; }
+  .modal .actions .danger { color:var(--err); margin-right:auto; background:none; border:none; }
 
   footer { text-align:center; color:var(--muted); font-size:12px; padding:30px 0; }
   #importFile { display:none; }
 
-  .range-label.ok { color:#2a8a3e; font-weight:600; }
-  .range-label.err { color:#d9534f; font-weight:600; }
+  .range-label.ok { color:var(--ok); font-weight:600; }
+  .range-label.err { color:var(--err); font-weight:600; }
   .gh-warning {
-    background:#fff6e5; border:1px solid #f0c96b; border-radius:6px; padding:10px 12px;
-    font-size:12px; line-height:1.5; color:#7a5b00; margin-top:12px;
+    background:var(--head2); border:1px solid var(--border); border-radius:6px; padding:10px 12px;
+    font-size:12px; line-height:1.5; color:var(--muted); margin-top:12px;
   }
   .modal.wide { max-width:460px; }
 
@@ -115,7 +127,7 @@
   }
   .intern-tabs button.tab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
   .intern-tabs button.tab.add { border-style:dashed; color:var(--accent); background:transparent; }
-  .intern-tabs button.tab.danger-tab { margin-left:auto; color:#d9534f; background:transparent; border-color:#f0c0c0; }
+  .intern-tabs button.tab.danger-tab { margin-left:auto; color:var(--err); background:transparent; border-color:var(--border); }
 
   @media (max-width: 640px) {
     header h1 { width:100%; }
