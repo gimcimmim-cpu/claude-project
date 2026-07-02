@@ -3,7 +3,16 @@
     {
       "id": "imr2rnz8ws9hme",
       "name": "신현경",
-      "entries": {}
+      "entries": {
+        "2026-07-01": [
+          {
+            "startMin": 780,
+            "endMin": 1020,
+            "text": "i50 Calprotectin 구동",
+            "assignedBy": "김나연"
+          }
+        ]
+      }
     }
   ],
   "currentId": "imr2rnz8ws9hme"
