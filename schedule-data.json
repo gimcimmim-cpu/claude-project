@@ -19,6 +19,11 @@
             "startMin": 600,
             "endMin": 660,
             "text": "분주"
+          },
+          {
+            "startMin": 660,
+            "endMin": 720,
+            "text": "조립"
           }
         ]
       }
