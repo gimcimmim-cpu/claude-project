@@ -521,12 +521,12 @@
 
   function computeOccupancy(dateStr){
     const blocks = getBlocks(dateStr);
-    const startMap = {}; // anchorHour -> block (with spanRows)
+    const startMap = {}; // anchorHour -> { block, spanRows } (block keeps original reference)
     const covered = {};  // hour -> true (covered by an earlier block's rowspan)
     blocks.forEach(b => {
       const anchorHour = Math.floor(b.startMin / 60);
       const spanRows = Math.ceil((b.endMin - anchorHour*60) / 60);
-      startMap[anchorHour] = { ...b, spanRows };
+      startMap[anchorHour] = { block:b, spanRows };
       for (let i=1; i<spanRows; i++) covered[anchorHour+i] = true;
     });
     return { startMap, covered };
@@ -604,9 +604,10 @@
             tr.appendChild(td);
             return;
           }
-          const block = startMap[hour];
-          if (block){
-            td.rowSpan = block.spanRows;
+          const entry = startMap[hour];
+          if (entry){
+            const block = entry.block;
+            td.rowSpan = entry.spanRows;
             td.className = 'cell filled';
             td.textContent = `${fmtHM(block.startMin)}~${fmtHM(block.endMin)}\n${block.text}`;
             td.addEventListener('click', () => openModal(dateStr, hour, block));
