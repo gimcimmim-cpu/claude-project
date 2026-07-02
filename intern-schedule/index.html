@@ -188,6 +188,8 @@
     <input type="time" id="modalEnd" step="300">
     <label for="modalText">업무 내용</label>
     <textarea id="modalText" placeholder="예: i50 calprotectin 구동"></textarea>
+    <label for="modalAssignedBy">업무 지시자</label>
+    <input type="text" id="modalAssignedBy" placeholder="예: 김철민 팀장">
     <div class="actions">
       <button class="danger" id="btnDelete">삭제</button>
       <button id="btnCancel">취소</button>
@@ -243,8 +245,10 @@
   }
   // migrates legacy {start,len} hour-based blocks into {startMin,endMin}
   function migrateBlock(b){
-    if (b.startMin != null && b.endMin != null) return { startMin:b.startMin, endMin:b.endMin, text:b.text };
-    return { startMin: b.start*60, endMin: (b.start + b.len)*60, text: b.text };
+    if (b.startMin != null && b.endMin != null){
+      return { startMin:b.startMin, endMin:b.endMin, text:b.text, assignedBy:b.assignedBy || '' };
+    }
+    return { startMin: b.start*60, endMin: (b.start + b.len)*60, text: b.text, assignedBy: b.assignedBy || '' };
   }
 
   function makeIntern(name, entries){
@@ -609,7 +613,8 @@
             const block = entry.block;
             td.rowSpan = entry.spanRows;
             td.className = 'cell filled';
-            td.textContent = `${fmtHM(block.startMin)}~${fmtHM(block.endMin)}\n${block.text}`;
+            td.textContent = block.text;
+            td.title = block.assignedBy ? `지시자: ${block.assignedBy}` : '';
             td.addEventListener('click', () => openModal(dateStr, hour, block));
           } else {
             td.className = 'cell';
@@ -629,6 +634,7 @@
   const modalStart = document.getElementById('modalStart');
   const modalEnd = document.getElementById('modalEnd');
   const modalText = document.getElementById('modalText');
+  const modalAssignedBy = document.getElementById('modalAssignedBy');
   let ctx = null; // { dateStr, hour, existing }
 
   function openModal(dateStr, hour, existing){
@@ -645,10 +651,12 @@
       modalStart.value = fmtHM(existing.startMin);
       modalEnd.value = fmtHM(existing.endMin);
       modalText.value = existing.text;
+      modalAssignedBy.value = existing.assignedBy || '';
     } else {
       modalStart.value = fmtHM(hour*60);
       modalEnd.value = fmtHM(Math.min(hour*60 + 60, section.endMin));
       modalText.value = '';
+      modalAssignedBy.value = '';
     }
     overlay.classList.add('open');
     modalText.focus();
@@ -687,7 +695,7 @@
       return;
     }
     if (text){
-      blocks.push({ startMin, endMin, text });
+      blocks.push({ startMin, endMin, text, assignedBy: modalAssignedBy.value.trim() });
       blocks.sort((a,b) => a.startMin - b.startMin);
     }
     if (blocks.length) getCurrentIntern().entries[dateStr] = blocks;
