@@ -10,6 +10,20 @@
     var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
   })();
+
+  // 상위 폴더(팀 대시보드)의 서비스워커가 이 경로까지 캐시 우선으로 가로채는 것을 막기 위해,
+  // 이 폴더 전용의 캐시 없는 서비스워커를 등록해 scope를 되찾는다.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+    navigator.serviceWorker.ready.then(function(){
+      var foreignControl = navigator.serviceWorker.controller &&
+        navigator.serviceWorker.controller.scriptURL.indexOf('/intern-schedule/') === -1;
+      if (foreignControl && !sessionStorage.getItem('internSchedule_sw_reclaimed')){
+        sessionStorage.setItem('internSchedule_sw_reclaimed', '1');
+        location.reload();
+      }
+    });
+  }
 </script>
 <style>
   :root{
