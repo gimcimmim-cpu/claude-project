@@ -105,6 +105,18 @@
   }
   .modal.wide { max-width:460px; }
 
+  .intern-tabs {
+    display:flex; gap:6px; padding:10px 20px; background:var(--card);
+    border-bottom:1px solid var(--border); overflow-x:auto; align-items:center;
+  }
+  .intern-tabs button.tab {
+    padding:7px 14px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:13px; white-space:nowrap; cursor:pointer;
+  }
+  .intern-tabs button.tab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:700; }
+  .intern-tabs button.tab.add { border-style:dashed; color:var(--accent); background:transparent; }
+  .intern-tabs button.tab.danger-tab { margin-left:auto; color:#d9534f; background:transparent; border-color:#f0c0c0; }
+
   @media (max-width: 640px) {
     header h1 { width:100%; }
     .btns { margin-left:0; width:100%; }
@@ -117,7 +129,7 @@
 <header>
   <h1>📋 인턴 스케쥴</h1>
   <div class="name-field">
-    <label for="internName">인턴명</label>
+    <label for="internName">선택된 인턴 이름</label>
     <input type="text" id="internName" placeholder="이름 입력">
   </div>
   <div class="btns">
@@ -129,6 +141,8 @@
     <button id="btnPrint">🖨 인쇄</button>
   </div>
 </header>
+
+<div class="intern-tabs" id="internTabs"></div>
 
 <div class="controls">
   <button id="prevWeek">◀ 이전 주</button>
@@ -199,16 +213,44 @@
   ];
   const ALL_HOURS = SECTIONS.flatMap(s => s.hours);
 
+  function makeIntern(name, entries){
+    return {
+      id: 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      name: name || '',
+      entries: entries || {}, // entries[dateStr] = [{start,len,text}]
+    };
+  }
+
+  // migrates old single-intern shape {name, entries} into the new {interns:[...], currentId} shape
+  function normalizeState(parsed){
+    if (parsed && Array.isArray(parsed.interns) && parsed.interns.length){
+      if (!parsed.currentId || !parsed.interns.some(i => i.id === parsed.currentId)){
+        parsed.currentId = parsed.interns[0].id;
+      }
+      return parsed;
+    }
+    if (parsed && (parsed.entries || parsed.name)){
+      const intern = makeIntern(parsed.name, parsed.entries);
+      return { interns:[intern], currentId: intern.id };
+    }
+    const intern = makeIntern('');
+    return { interns:[intern], currentId: intern.id };
+  }
+
   let state = loadState();
 
   function loadState(){
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) return normalizeState(JSON.parse(raw));
     } catch(e){ console.warn('load failed', e); }
-    return { name:'', entries:{} }; // entries[dateStr] = [{start,len,text}]
+    return normalizeState(null);
   }
   function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  function getCurrentIntern(){
+    return state.interns.find(i => i.id === state.currentId) || state.interns[0];
+  }
 
   // ---- GitHub sync ----
   let ghSha = null;
@@ -345,8 +387,71 @@
 
   // ---- header name ----
   const nameInput = document.getElementById('internName');
-  nameInput.value = state.name || '';
-  nameInput.addEventListener('input', () => { state.name = nameInput.value; saveState(); schedulePush(); });
+  nameInput.value = getCurrentIntern().name || '';
+  nameInput.addEventListener('input', () => {
+    getCurrentIntern().name = nameInput.value;
+    saveState();
+    renderInternTabs();
+    schedulePush();
+  });
+
+  // ---- intern tabs ----
+  const internTabsEl = document.getElementById('internTabs');
+  function renderInternTabs(){
+    internTabsEl.innerHTML = '';
+    state.interns.forEach(intern => {
+      const btn = document.createElement('button');
+      btn.className = 'tab' + (intern.id === state.currentId ? ' active' : '');
+      btn.textContent = intern.name || '(이름 없음)';
+      btn.addEventListener('click', () => {
+        state.currentId = intern.id;
+        saveState();
+        afterInternSwitch();
+      });
+      internTabsEl.appendChild(btn);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'tab add';
+    addBtn.textContent = '+ 인턴 추가';
+    addBtn.addEventListener('click', addIntern);
+    internTabsEl.appendChild(addBtn);
+
+    if (state.interns.length > 1){
+      const delBtn = document.createElement('button');
+      delBtn.className = 'tab danger-tab';
+      delBtn.textContent = '🗑 이 인턴 삭제';
+      delBtn.addEventListener('click', deleteCurrentIntern);
+      internTabsEl.appendChild(delBtn);
+    }
+  }
+
+  function addIntern(){
+    const name = prompt('새 인턴 이름을 입력하세요');
+    if (name === null) return;
+    const intern = makeIntern(name.trim());
+    state.interns.push(intern);
+    state.currentId = intern.id;
+    saveState();
+    afterInternSwitch();
+    syncPush('인턴 추가: ' + (intern.name || '(이름 없음)'));
+  }
+
+  function deleteCurrentIntern(){
+    if (state.interns.length <= 1) return;
+    const intern = getCurrentIntern();
+    if (!confirm(`"${intern.name || '이름 없음'}" 인턴의 스케쥴을 삭제할까요? 되돌릴 수 없습니다.`)) return;
+    state.interns = state.interns.filter(i => i.id !== intern.id);
+    state.currentId = state.interns[0].id;
+    saveState();
+    afterInternSwitch();
+    syncPush('인턴 삭제: ' + (intern.name || '(이름 없음)'));
+  }
+
+  function afterInternSwitch(){
+    nameInput.value = getCurrentIntern().name || '';
+    renderInternTabs();
+    render();
+  }
 
   // ---- week select ----
   const weekSelect = document.getElementById('weekSelect');
@@ -369,7 +474,7 @@
   const table = document.getElementById('schedTable');
   const rangeLabel = document.getElementById('rangeLabel');
 
-  function getBlocks(dateStr){ return state.entries[dateStr] || []; }
+  function getBlocks(dateStr){ return getCurrentIntern().entries[dateStr] || []; }
 
   function computeOccupancy(dateStr){
     const blocks = getBlocks(dateStr);
@@ -526,8 +631,8 @@
       blocks.push({ start:hour, len, text });
       blocks.sort((a,b) => a.start - b.start);
     }
-    if (blocks.length) state.entries[dateStr] = blocks;
-    else delete state.entries[dateStr];
+    if (blocks.length) getCurrentIntern().entries[dateStr] = blocks;
+    else delete getCurrentIntern().entries[dateStr];
 
     saveState();
     closeModal();
@@ -540,8 +645,8 @@
     const { dateStr, existing } = ctx;
     if (existing){
       const blocks = getBlocks(dateStr).filter(b => b !== existing);
-      if (blocks.length) state.entries[dateStr] = blocks;
-      else delete state.entries[dateStr];
+      if (blocks.length) getCurrentIntern().entries[dateStr] = blocks;
+      else delete getCurrentIntern().entries[dateStr];
       saveState();
       syncPush(`${dateStr} 일정 삭제`);
     }
@@ -554,9 +659,8 @@
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const nameForFile = (state.name || '인턴').replace(/[^\w가-힣]/g,'');
     a.href = url;
-    a.download = `인턴스케줄_${nameForFile}_2026H2.json`;
+    a.download = `인턴스케줄_전체_2026H2.json`;
     a.click();
     URL.revokeObjectURL(url);
   });
@@ -570,11 +674,10 @@
     reader.onload = () => {
       try {
         const parsed = JSON.parse(reader.result);
-        if (typeof parsed !== 'object' || !parsed.entries) throw new Error('invalid format');
-        state = { name: parsed.name || '', entries: parsed.entries || {} };
+        if (typeof parsed !== 'object') throw new Error('invalid format');
+        state = normalizeState(parsed);
         saveState();
-        nameInput.value = state.name;
-        render();
+        afterInternSwitch();
         syncPush('로컬 파일에서 가져오기');
         alert('가져오기가 완료되었습니다.');
       } catch(err){
@@ -636,10 +739,9 @@
     try {
       const remote = await ghFetchRemote(cfg);
       if (remote){
-        state = { name: remote.name || '', entries: remote.entries || {} };
+        state = normalizeState(remote);
         saveState();
-        nameInput.value = state.name;
-        render();
+        afterInternSwitch();
       } else {
         await ghPushRemote(cfg, '초기 스케쥴 파일 생성');
       }
@@ -659,10 +761,9 @@
     try {
       const remote = await ghFetchRemote(ghConfig);
       if (remote){
-        state = { name: remote.name || '', entries: remote.entries || {} };
+        state = normalizeState(remote);
         saveState();
-        nameInput.value = state.name;
-        render();
+        afterInternSwitch();
       }
       refreshGhStatusIdle();
     } catch(e){
@@ -673,16 +774,16 @@
 
   // ---- bootstrap ----
   async function bootstrap(){
+    renderInternTabs();
     render();
     if (isGhConfigured()){
       setGhStatus('⏳ GitHub에서 불러오는 중...', '');
       try {
         const remote = await ghFetchRemote(ghConfig);
         if (remote){
-          state = { name: remote.name || '', entries: remote.entries || {} };
+          state = normalizeState(remote);
           saveState();
-          nameInput.value = state.name;
-          render();
+          afterInternSwitch();
         }
         refreshGhStatusIdle();
       } catch(e){
