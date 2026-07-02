@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>인턴 스케쥴 (2026.07.01 - 2026.12.31)</title>
+<script>
+  (function(){
+    var saved = localStorage.getItem('internSchedule_theme');
+    var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  })();
+</script>
 <style>
   :root{
     --navy:#0d2149; --blue:#1d4ed8; --blue-m:#2563eb;
@@ -145,6 +152,7 @@
     <input type="text" id="internName" placeholder="이름 입력">
   </div>
   <div class="btns">
+    <button id="btnThemeToggle" title="다크/라이트 모드 전환">🌙</button>
     <button id="btnGhSettings">🔗 GitHub 설정</button>
     <button id="btnGhSync">🔄 동기화</button>
     <button id="btnExport">⬇ 내보내기</button>
@@ -174,8 +182,10 @@
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3 id="modalTitle"></h3>
+    <label for="modalStart">시작 시간</label>
+    <input type="time" id="modalStart" step="300">
     <label for="modalEnd">종료 시간</label>
-    <select id="modalEnd"></select>
+    <input type="time" id="modalEnd" step="300">
     <label for="modalText">업무 내용</label>
     <textarea id="modalText" placeholder="예: i50 calprotectin 구동"></textarea>
     <div class="actions">
@@ -220,10 +230,22 @@
   const GH_CONFIG_KEY = 'internSchedule_gh_config_v1';
   const DOW_LABEL = ['일','월','화','수','목','금','토'];
   const SECTIONS = [
-    { name:'오전', hours:[8,9,10,11] },
-    { name:'오후', hours:[13,14,15,16] },
+    { name:'오전', hours:[8,9,10,11], startMin:8*60, endMin:12*60 },
+    { name:'오후', hours:[13,14,15,16], startMin:13*60, endMin:17*60 },
   ];
   const ALL_HOURS = SECTIONS.flatMap(s => s.hours);
+
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function fmtHM(min){ return pad2(Math.floor(min/60)) + ':' + pad2(min%60); }
+  function parseHM(str){
+    const [h,m] = str.split(':').map(Number);
+    return h*60 + m;
+  }
+  // migrates legacy {start,len} hour-based blocks into {startMin,endMin}
+  function migrateBlock(b){
+    if (b.startMin != null && b.endMin != null) return { startMin:b.startMin, endMin:b.endMin, text:b.text };
+    return { startMin: b.start*60, endMin: (b.start + b.len)*60, text: b.text };
+  }
 
   function makeIntern(name, entries){
     return {
@@ -233,16 +255,25 @@
     };
   }
 
-  // migrates old single-intern shape {name, entries} into the new {interns:[...], currentId} shape
+  // migrates old single-intern shape {name, entries} into the new {interns:[...], currentId} shape,
+  // and migrates legacy hour-based {start,len} blocks into {startMin,endMin}
+  function migrateEntries(entries){
+    const out = {};
+    Object.keys(entries || {}).forEach(dateStr => {
+      out[dateStr] = (entries[dateStr] || []).map(migrateBlock);
+    });
+    return out;
+  }
   function normalizeState(parsed){
     if (parsed && Array.isArray(parsed.interns) && parsed.interns.length){
+      parsed.interns.forEach(i => { i.entries = migrateEntries(i.entries); });
       if (!parsed.currentId || !parsed.interns.some(i => i.id === parsed.currentId)){
         parsed.currentId = parsed.interns[0].id;
       }
       return parsed;
     }
     if (parsed && (parsed.entries || parsed.name)){
-      const intern = makeIntern(parsed.name, parsed.entries);
+      const intern = makeIntern(parsed.name, migrateEntries(parsed.entries));
       return { interns:[intern], currentId: intern.id };
     }
     const intern = makeIntern('');
@@ -490,11 +521,13 @@
 
   function computeOccupancy(dateStr){
     const blocks = getBlocks(dateStr);
-    const startMap = {}; // hour -> len
-    const covered = {};  // hour -> true (covered by an earlier block, not the start)
+    const startMap = {}; // anchorHour -> block (with spanRows)
+    const covered = {};  // hour -> true (covered by an earlier block's rowspan)
     blocks.forEach(b => {
-      startMap[b.start] = b;
-      for (let h=b.start+1; h<b.start+b.len; h++) covered[h] = true;
+      const anchorHour = Math.floor(b.startMin / 60);
+      const spanRows = Math.ceil((b.endMin - anchorHour*60) / 60);
+      startMap[anchorHour] = { ...b, spanRows };
+      for (let i=1; i<spanRows; i++) covered[anchorHour+i] = true;
     });
     return { startMap, covered };
   }
@@ -573,9 +606,9 @@
           }
           const block = startMap[hour];
           if (block){
-            td.rowSpan = block.len;
+            td.rowSpan = block.spanRows;
             td.className = 'cell filled';
-            td.textContent = block.text;
+            td.textContent = `${fmtHM(block.startMin)}~${fmtHM(block.endMin)}\n${block.text}`;
             td.addEventListener('click', () => openModal(dateStr, hour, block));
           } else {
             td.className = 'cell';
@@ -592,6 +625,7 @@
   // ---- modal ----
   const overlay = document.getElementById('overlay');
   const modalTitle = document.getElementById('modalTitle');
+  const modalStart = document.getElementById('modalStart');
   const modalEnd = document.getElementById('modalEnd');
   const modalText = document.getElementById('modalText');
   let ctx = null; // { dateStr, hour, existing }
@@ -599,21 +633,20 @@
   function openModal(dateStr, hour, existing){
     ctx = { dateStr, hour, existing };
     const section = sectionOf(hour);
-    modalTitle.textContent = `${dateStr} ${hour}:00 부터`;
+    modalTitle.textContent = `${dateStr} 일정 (${section.name} ${fmtHM(section.startMin)}~${fmtHM(section.endMin)})`;
 
-    modalEnd.innerHTML = '';
-    section.hours.filter(h => h >= hour).forEach(h => {
-      const opt = document.createElement('option');
-      opt.value = h;
-      opt.textContent = h + ':00 까지';
-      modalEnd.appendChild(opt);
-    });
+    modalStart.min = fmtHM(section.startMin);
+    modalStart.max = fmtHM(section.endMin);
+    modalEnd.min = fmtHM(section.startMin);
+    modalEnd.max = fmtHM(section.endMin);
 
     if (existing){
-      modalEnd.value = existing.start + existing.len - 1;
+      modalStart.value = fmtHM(existing.startMin);
+      modalEnd.value = fmtHM(existing.endMin);
       modalText.value = existing.text;
     } else {
-      modalEnd.value = hour;
+      modalStart.value = fmtHM(hour*60);
+      modalEnd.value = fmtHM(Math.min(hour*60 + 60, section.endMin));
       modalText.value = '';
     }
     overlay.classList.add('open');
@@ -628,20 +661,33 @@
     if (!ctx) return;
     const { dateStr, hour, existing } = ctx;
     const text = modalText.value.trim();
-    const endHour = Number(modalEnd.value);
-    const len = sectionOf(hour).hours.indexOf(endHour) - sectionOf(hour).hours.indexOf(hour) + 1;
+    if (!modalStart.value || !modalEnd.value){
+      alert('시작/종료 시간을 입력하세요.');
+      return;
+    }
+    const startMin = parseHM(modalStart.value);
+    const endMin = parseHM(modalEnd.value);
+    const section = sectionOf(hour);
+
+    if (startMin >= endMin){
+      alert('종료 시간은 시작 시간보다 늦어야 합니다.');
+      return;
+    }
+    if (startMin < section.startMin || endMin > section.endMin){
+      alert(`${section.name} 시간대(${fmtHM(section.startMin)}~${fmtHM(section.endMin)}) 안에서만 입력할 수 있습니다.`);
+      return;
+    }
 
     let blocks = getBlocks(dateStr).filter(b => b !== existing);
     // conflict check
-    const newEndExclusive = hour + len;
-    const overlap = blocks.some(b => hour < b.start + b.len && b.start < newEndExclusive);
+    const overlap = blocks.some(b => startMin < b.endMin && b.startMin < endMin);
     if (overlap){
       alert('선택한 시간대에 이미 다른 일정이 있습니다.');
       return;
     }
     if (text){
-      blocks.push({ start:hour, len, text });
-      blocks.sort((a,b) => a.start - b.start);
+      blocks.push({ startMin, endMin, text });
+      blocks.sort((a,b) => a.startMin - b.startMin);
     }
     if (blocks.length) getCurrentIntern().entries[dateStr] = blocks;
     else delete getCurrentIntern().entries[dateStr];
@@ -701,6 +747,25 @@
   });
 
   document.getElementById('btnPrint').addEventListener('click', () => window.print());
+
+  // ---- theme toggle ----
+  const btnThemeToggle = document.getElementById('btnThemeToggle');
+  function applyThemeIcon(){
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    btnThemeToggle.textContent = isDark ? '☀️' : '🌙';
+  }
+  btnThemeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark){
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('internSchedule_theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('internSchedule_theme', 'dark');
+    }
+    applyThemeIcon();
+  });
+  applyThemeIcon();
 
   // ---- GitHub settings modal ----
   const ghOverlay = document.getElementById('ghOverlay');
