@@ -25,6 +25,7 @@
     });
   }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 
@@ -210,8 +211,11 @@
       <button id="btnThemeToggle" title="다크/라이트 모드 전환">🌙</button>
       <button id="btnGhSettings">🔗 GitHub 설정</button>
       <button id="btnGhSync">🔄 동기화</button>
-      <button id="btnExport">⬇ 내보내기</button>
-      <button id="btnImport">⬆ 가져오기</button>
+      <button id="btnXlsxExport" title="전체 인턴 스케쥴을 엑셀 파일로 저장">📗 엑셀 내보내기</button>
+      <button id="btnXlsxImport" title="엑셀 파일로 전체 스케쥴을 덮어쓰기">📥 엑셀 가져오기</button>
+      <input type="file" id="xlsxFile" accept=".xlsx,.xls,.csv" style="display:none">
+      <button id="btnExport">⬇ JSON 내보내기</button>
+      <button id="btnImport">⬆ JSON 가져오기</button>
       <input type="file" id="importFile" accept="application/json">
       <button id="btnPrint">🖨 인쇄</button>
     </div>
@@ -233,7 +237,7 @@
 </main>
 
 <footer>셀을 클릭해 업무를 입력하세요. 종료 시간을 늦게 잡으면 셀이 자동으로 합쳐집니다.<br>
-데이터는 이 브라우저의 localStorage에 자동 저장되며, "GitHub 설정"으로 연동하면 저장할 때마다 저장소 파일에도 함께 커밋되어 팀원 모두 같은 최신 스케쥴을 볼 수 있습니다.</footer>
+엑셀(열: 인턴·날짜·시작·종료·업무내용·업무지시자)로 내보내/가져올 수 있습니다. GitHub 토큰 연동이 없으면 저장소의 공용 파일(schedule-data.json)을 자동으로 불러와 보여주며, 편집 내용은 이 브라우저에만 저장됩니다.</footer>
 
 <div class="overlay" id="overlay">
   <div class="modal">
@@ -820,6 +824,96 @@
     reader.readAsText(file);
   });
 
+  // ---- excel export / import ----
+  const XLSX_HEADERS = ['인턴','날짜','시작','종료','업무내용','업무지시자'];
+  function xlsxReady(){
+    if (typeof XLSX === 'undefined'){ alert('엑셀 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침하세요.'); return false; }
+    return true;
+  }
+  document.getElementById('btnXlsxExport').addEventListener('click', () => {
+    if (!xlsxReady()) return;
+    const rows = [XLSX_HEADERS];
+    state.interns.forEach(intern => {
+      Object.keys(intern.entries).sort().forEach(dateStr => {
+        intern.entries[dateStr].forEach(b => {
+          rows.push([intern.name, dateStr, fmtHM(b.startMin), fmtHM(b.endMin), b.text, b.assignedBy || '']);
+        });
+      });
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:10},{wch:12},{wch:8},{wch:8},{wch:40},{wch:14}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '스케쥴');
+    XLSX.writeFile(wb, '인턴스케줄_2026H2.xlsx');
+  });
+
+  // 엑셀 날짜 셀(일련번호/문자열) -> 'YYYY-MM-DD'
+  function cellToDateStr(v){
+    if (typeof v === 'number'){
+      const d = new Date(Math.round((v - 25569) * 86400000));
+      return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth()+1) + '-' + pad2(d.getUTCDate());
+    }
+    const m = String(v).trim().match(/^(\d{4})[-./]\s*(\d{1,2})[-./]\s*(\d{1,2})/);
+    return m ? m[1] + '-' + pad2(+m[2]) + '-' + pad2(+m[3]) : null;
+  }
+  // 엑셀 시간 셀(하루의 비율/문자열) -> 분
+  function cellToMin(v){
+    if (typeof v === 'number') return Math.round((v % 1) * 1440);
+    const m = String(v).trim().match(/^(\d{1,2}):(\d{2})/);
+    return m ? (+m[1]) * 60 + (+m[2]) : null;
+  }
+  function stateFromRows(rows){
+    const byName = new Map();
+    let skipped = 0;
+    rows.forEach(r => {
+      const name = String(r['인턴'] ?? '').trim();
+      const dateStr = cellToDateStr(r['날짜']);
+      const startMin = cellToMin(r['시작']);
+      const endMin = cellToMin(r['종료']);
+      const text = String(r['업무내용'] ?? '').trim();
+      const d = dateStr ? new Date(dateStr + 'T00:00:00') : null;
+      if (!dateStr || startMin == null || endMin == null || endMin <= startMin || !text || !inRange(d)){
+        skipped++; return;
+      }
+      if (!byName.has(name)) byName.set(name, {});
+      const entries = byName.get(name);
+      (entries[dateStr] = entries[dateStr] || []).push({ startMin, endMin, text, assignedBy: String(r['업무지시자'] ?? '').trim() });
+    });
+    const interns = [];
+    byName.forEach((entries, name) => {
+      Object.values(entries).forEach(list => list.sort((a,b) => a.startMin - b.startMin));
+      const prev = state.interns.find(i => i.name === name);
+      interns.push(prev ? { id: prev.id, name, entries } : makeIntern(name, entries));
+    });
+    return { interns, skipped };
+  }
+  const xlsxFile = document.getElementById('xlsxFile');
+  document.getElementById('btnXlsxImport').addEventListener('click', () => { if (xlsxReady()) xlsxFile.click(); });
+  xlsxFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const wb = XLSX.read(reader.result, { type:'array' });
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval:'' });
+        const { interns, skipped } = stateFromRows(rows);
+        if (!interns.length) throw new Error('읽을 수 있는 행이 없습니다. 열 이름(인턴·날짜·시작·종료·업무내용·업무지시자)과 날짜 범위(2026-07-01~12-31)를 확인하세요.');
+        if (!confirm(`엑셀의 인턴 ${interns.length}명 일정으로 현재 스케쥴 전체를 덮어쓸까요?` + (skipped ? `\n(읽지 못해 건너뛴 행: ${skipped}개)` : ''))) return;
+        const keepId = state.currentId;
+        state = { interns, currentId: interns.some(i => i.id === keepId) ? keepId : interns[0].id };
+        saveState();
+        afterInternSwitch();
+        syncPush('엑셀에서 가져오기');
+        alert('엑셀 가져오기가 완료되었습니다.' + (skipped ? `\n건너뛴 행: ${skipped}개` : ''));
+      } catch(err){
+        alert('엑셀을 읽지 못했습니다: ' + err.message);
+      }
+      xlsxFile.value = '';
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
   document.getElementById('btnPrint').addEventListener('click', () => window.print());
 
   // ---- theme toggle ----
@@ -1003,7 +1097,28 @@
         setGhStatus('⚠ GitHub 불러오기 실패 (로컬 데이터 표시 중): ' + e.message, 'err');
       }
     } else {
-      refreshGhStatusIdle();
+      await loadPublicSchedule();
+    }
+  }
+
+  // 토큰 없이도 저장소의 공용 schedule-data.json을 읽어 최신 스케쥴을 보여준다.
+  async function loadPublicSchedule(){
+    try {
+      const res = await fetch('../schedule-data.json?t=' + Date.now(), { cache:'no-store' });
+      if (!res.ok) throw new Error(res.status);
+      const remote = await res.json();
+      if (!remote || !Array.isArray(remote.interns) || !remote.interns.length) throw new Error('empty');
+      const next = normalizeState(remote);
+      const prevRaw = localStorage.getItem(STORAGE_KEY);
+      if (prevRaw && prevRaw !== JSON.stringify(next)) localStorage.setItem(STORAGE_KEY + '_backup', prevRaw);
+      if (next.interns.some(i => i.id === state.currentId)) next.currentId = state.currentId;
+      state = next;
+      saveState();
+      afterInternSwitch();
+      setGhStatus('📄 저장소 공용 스케쥴 표시 중 (편집은 이 브라우저에만 저장 · 엑셀로 내보내 관리)', 'ok');
+    } catch(e){
+      console.warn('public schedule load failed', e);
+      setGhStatus('GitHub 연동 안 됨 (로컬에만 저장)', '');
     }
   }
   bootstrap();
