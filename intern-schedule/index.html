@@ -237,7 +237,7 @@
 </main>
 
 <footer>셀을 클릭해 업무를 입력하세요. 종료 시간을 늦게 잡으면 셀이 자동으로 합쳐집니다.<br>
-엑셀(열: 인턴·날짜·시작·종료·업무내용·업무지시자)로 내보내/가져올 수 있습니다. GitHub 토큰 연동이 없으면 저장소의 공용 파일(schedule-data.json)을 자동으로 불러와 보여주며, 편집 내용은 이 브라우저에만 저장됩니다.</footer>
+엑셀 가져오기는 달력형 표(월별 블록) 또는 목록형(인턴·날짜·시작·종료·업무내용·업무지시자) 모두 지원합니다. GitHub 토큰 연동이 없으면 저장소의 공용 파일(schedule-data.json)을 자동으로 불러와 보여주며, 편집 내용은 이 브라우저에만 저장됩니다.</footer>
 
 <div class="overlay" id="overlay">
   <div class="modal">
@@ -887,6 +887,80 @@
     });
     return { interns, skipped };
   }
+  // ---- 달력 격자형 엑셀 (월 블록 × 주 × 시간대) ----
+  function isGridSheet(ws){
+    return Object.keys(ws).some(k => k[0] !== '!' && ws[k].t === 's' && /^\d{1,2}월$/.test(String(ws[k].v).trim()));
+  }
+  function stateFromGrid(ws){
+    const R = XLSX.utils;
+    const merges = (ws['!merges'] || []);
+    const cellAt = (r,c) => ws[R.encode_cell({r,c})];
+    // (r,c)가 속한 병합 범위의 왼쪽 위 칸 좌표를 소유자로 본다
+    function ownerOf(r,c){
+      for (const m of merges){
+        if (r >= m.s.r && r <= m.e.r && c >= m.s.c && c <= m.e.c) return { r:m.s.r, c:m.s.c };
+      }
+      return { r, c };
+    }
+    const entries = {};
+    const warnings = [];
+    const headers = [];
+    Object.keys(ws).forEach(k => {
+      if (k[0] === '!') return;
+      const m = String(ws[k].v).trim().match(/^(\d{1,2})월$/);
+      if (m && ws[k].t === 's'){ const a = R.decode_cell(k); headers.push({ r:a.r, c:a.c, month:+m[1] }); }
+    });
+    headers.forEach(h => {
+      const year = START.getFullYear();
+      const endRow = (R.decode_range(ws['!ref']).e.r);
+      for (let r = h.r + 1; r + 1 <= endRow; r++){
+        const dowCell = cellAt(r+1, h.c+2);
+        if (!dowCell || String(dowCell.v).trim() !== '월') continue;
+        // 날짜 행(r)에서 요일과 일치하는 첫 칸을 기준으로 5일치 날짜를 계산 (오타가 있어도 달력 기준으로 보정)
+        let anchor = null;
+        for (let j = 0; j < 5 && !anchor; j++){
+          const dc = cellAt(r, h.c+2+j);
+          if (dc && typeof dc.v === 'number'){
+            const d = new Date(year, h.month-1, dc.v);
+            if (d.getMonth() === h.month-1 && ((d.getDay()+6)%7) === j) anchor = { j, d };
+          }
+        }
+        if (!anchor){ continue; }
+        for (let j = 0; j < 5; j++){
+          const dc = cellAt(r, h.c+2+j);
+          const d = new Date(anchor.d); d.setDate(d.getDate() + (j - anchor.j));
+          if (dc && typeof dc.v === 'number' && dc.v !== d.getDate()){
+            warnings.push(`${h.month}월 표의 날짜 ${dc.v}일 칸을 ${d.getMonth()+1}/${d.getDate()}(${DOW_LABEL[d.getDay()]})로 보정`);
+          }
+          const dateStr = fmt(d);
+          if (!inRange(d)) continue;
+          // 시간 행: 날짜/요일 행 다음부터 시간 열(h.c+1)에 숫자(하루 비율)가 있는 연속 행
+          let prev = null, cur = null;
+          const flush = () => { if (cur){ (entries[dateStr] = entries[dateStr] || []).push(cur); cur = null; } };
+          for (let i = r+2; i <= endRow; i++){
+            const tc = cellAt(i, h.c+1);
+            if (!tc || typeof tc.v !== 'number') break;
+            const hour = Math.round(tc.v * 24);
+            const o = ownerOf(i, h.c+2+j);
+            const ov = cellAt(o.r, o.c);
+            const text = ov && ov.v != null ? String(ov.v).replace(/\s*[\r\n]+\s*/g, ' ').replace(/\s{2,}/g, ' ').trim() : '';
+            const key = o.r + ',' + o.c;
+            if (text && cur && cur.key === key && hour === prev + 1){
+              cur.endMin = (hour+1) * 60;
+            } else {
+              flush();
+              if (text) cur = { key, startMin: hour*60, endMin: (hour+1)*60, text, assignedBy:'' };
+            }
+            prev = hour;
+          }
+          flush();
+          if (entries[dateStr]) entries[dateStr].forEach(b => delete b.key);
+        }
+      }
+    });
+    return { entries, warnings };
+  }
+
   const xlsxFile = document.getElementById('xlsxFile');
   document.getElementById('btnXlsxImport').addEventListener('click', () => { if (xlsxReady()) xlsxFile.click(); });
   xlsxFile.addEventListener('change', (e) => {
@@ -896,7 +970,21 @@
     reader.onload = () => {
       try {
         const wb = XLSX.read(reader.result, { type:'array' });
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval:'' });
+        const ws0 = wb.Sheets[wb.SheetNames[0]];
+        if (isGridSheet(ws0)){
+          const { entries, warnings } = stateFromGrid(ws0);
+          const count = Object.values(entries).reduce((n, l) => n + l.length, 0);
+          if (!count) throw new Error('달력 표에서 읽을 수 있는 일정이 없습니다.');
+          const cur = getCurrentIntern();
+          if (!confirm(`달력형 엑셀에서 일정 ${count}건을 읽었습니다.\n현재 선택된 인턴 "${cur.name || '이름 없음'}"의 스케쥴 전체를 덮어쓸까요?` + (warnings.length ? `\n\n날짜 보정 ${warnings.length}건:\n` + warnings.join('\n') : ''))) return;
+          cur.entries = entries;
+          saveState();
+          afterInternSwitch();
+          syncPush('엑셀(달력형)에서 가져오기');
+          alert(`엑셀 가져오기가 완료되었습니다. (${count}건)`);
+          return;
+        }
+        const rows = XLSX.utils.sheet_to_json(ws0, { defval:'' });
         const { interns, skipped } = stateFromRows(rows);
         if (!interns.length) throw new Error('읽을 수 있는 행이 없습니다. 열 이름(인턴·날짜·시작·종료·업무내용·업무지시자)과 날짜 범위(2026-07-01~12-31)를 확인하세요.');
         if (!confirm(`엑셀의 인턴 ${interns.length}명 일정으로 현재 스케쥴 전체를 덮어쓸까요?` + (skipped ? `\n(읽지 못해 건너뛴 행: ${skipped}개)` : ''))) return;
@@ -908,8 +996,9 @@
         alert('엑셀 가져오기가 완료되었습니다.' + (skipped ? `\n건너뛴 행: ${skipped}개` : ''));
       } catch(err){
         alert('엑셀을 읽지 못했습니다: ' + err.message);
+      } finally {
+        xlsxFile.value = '';
       }
-      xlsxFile.value = '';
     };
     reader.readAsArrayBuffer(file);
   });
